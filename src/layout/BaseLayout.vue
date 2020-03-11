@@ -3,14 +3,14 @@
     <!-- 头部 -->
     <header class="navbar">
       <el-row>
-        <!-- logo -->
+        <!-- header logo -->
         <el-col :span="4">
-          <router-link :to="{ name: 'home' }">
+          <router-link :to="{ name: 'dashboard' }">
             <img class="navbar-logo" src="../assets/img/melodylogo.png" alt="" />
             <span>Melody</span>
           </router-link>
         </el-col>
-        <!-- list -->
+        <!-- header mid -->
         <el-col class="navbar-list" :span="15">
           <div>
             <span>
@@ -24,7 +24,7 @@
             </span>
           </div>
         </el-col>
-        <!-- user -->
+        <!-- header right -->
         <el-col :span="5"> </el-col>
       </el-row>
     </header>
@@ -79,6 +79,6 @@ a span {
 }
 
 .main {
-  min-height: 600px;
+  min-height: 700px;
 }
 </style>

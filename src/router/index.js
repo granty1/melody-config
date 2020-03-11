@@ -10,12 +10,28 @@ const routes = [
     children: [
       {
         path: '/',
-        name: 'home',
-        component: () => import('../views/home'),
-      },
-      {
-        path: '*',
-        component: () => import('../views/error/404'),
+        component: () => import('../layout/SideBarLayout'),
+        children: [
+          {
+            path: '/',
+            name: 'dashboard',
+            component: () => import('../views/dashboard'),
+          },
+          {
+            path: '/service',
+            name: 'service',
+            component: () => import('../views/service'),
+          },
+          {
+            path: '/service-discovery',
+            name: 'service-discovery',
+            component: () => import('../views/servicediscovery'),
+          },
+          {
+            path: '*',
+            component: () => import('../views/error/404'),
+          },
+        ],
       },
     ],
   },

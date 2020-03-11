@@ -1,9 +1,9 @@
 <template>
   <div>
     <el-container>
-      <el-aside>
+      <el-aside class="aside">
         <el-menu :default-openeds="['1', '1']" router>
-          <el-menu-item index="dashboard">
+          <el-menu-item index="dashboard" :route="{ name: 'dashboard' }">
             <template slot="title"><i class="el-icon-message"></i>Dashboard</template>
           </el-menu-item>
 
@@ -33,20 +33,12 @@
 </template>
 
 <script>
-export default {
-  name: 'home',
-  data() {
-    return {
-      serviceConfig: {
-        version: 1,
-        serviceName: 'Hello Melody',
-      },
-    }
-  },
-  mounted() {
-    console.log(this.serviceConfig)
-  },
-}
+export default {}
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.aside {
+  min-height: 700px;
+  border-right: 1px solid #eaecef;
+}
+</style>
