@@ -5,10 +5,10 @@
       <el-row>
         <!-- logo -->
         <el-col :span="4">
-          <a href="/">
+          <router-link :to="{ name: 'home' }">
             <img class="navbar-logo" src="../assets/img/melodylogo.png" alt="" />
             <span>Melody</span>
-          </a>
+          </router-link>
         </el-col>
         <!-- list -->
         <el-col class="navbar-list" :span="15">
