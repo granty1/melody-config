@@ -4,21 +4,21 @@
       <el-aside class="aside">
         <el-menu :default-openeds="['1', '1']" router>
           <el-menu-item index="dashboard" :route="{ name: 'dashboard' }">
-            <template slot="title"><i class="el-icon-message"></i>Dashboard</template>
+            <template slot="title"><i class="el-icon-s-home"></i>Dashboard</template>
           </el-menu-item>
 
           <el-menu-item index="service">
-            <template slot="title"><i class="el-icon-menu"></i>Service configuration</template>
+            <template slot="title"><i class="el-icon-setting"></i>Service configuration</template>
           </el-menu-item>
 
           <el-menu-item index="service-discovery">
             <template slot="title">
-              <i class="el-icon-setting"></i>Service Discovery and hosts
+              <i class="el-icon-search"></i>Service Discovery and hosts
             </template>
           </el-menu-item>
 
           <el-submenu index="endpoints">
-            <template slot="title"><i class="el-icon-menu"></i>Endpoints</template>
+            <template slot="title"><i class="el-icon-s-tools"></i>Endpoints</template>
             <el-menu-item-group>
               <template slot="title">Add endpoint</template>
             </el-menu-item-group>
