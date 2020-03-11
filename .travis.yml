@@ -7,6 +7,5 @@ cache:
     - node_modules
   yarn: true
 script:
-  - sudo chmod 777 ./deploy.sh
   - ./deploy.sh
 branch: master
