@@ -79,6 +79,6 @@ a span {
 }
 
 .main {
-  min-height: 750px;
+  min-height: 600px;
 }
 </style>
