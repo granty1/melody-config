@@ -10,6 +10,3 @@ script:
   - yarn build
   - ./deploy.sh
 branch: master
-before_install:
-  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.22.4
-  - export PATH="$HOME/.yarn/bin:$PATH"
