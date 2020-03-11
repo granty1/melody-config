@@ -8,5 +8,6 @@ cache:
   yarn: true
 script:
   - yarn build
+  - sudo chmod 777 ./deploy.sh
   - ./deploy.sh
 branch: master
