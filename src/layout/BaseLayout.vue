@@ -7,7 +7,7 @@
         <el-col :span="4">
           <router-link :to="{ name: 'dashboard' }">
             <img class="navbar-logo" src="../assets/img/melodylogo.png" alt="" />
-            <span>Melody</span>
+            <span>Melody Configer</span>
           </router-link>
         </el-col>
         <!-- header mid -->
