@@ -38,6 +38,11 @@ export default {
       }
     },
   },
+  mounted() {
+    if (this.$ls.get('test')) {
+      this.cur = this.$ls.get('test')
+    }
+  },
 }
 </script>
 
