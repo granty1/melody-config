@@ -5,11 +5,11 @@
         <el-input v-model="input"></el-input>
       </el-form-item>
       <el-form-item label="Local Storage:">
-        {{cur}}
+        {{ cur }}
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleClick">
-          Click
+          Add to Ls
         </el-button>
       </el-form-item>
     </el-form>
@@ -22,7 +22,8 @@ export default {
   data() {
     return {
       input: 'Local Storage Test',
-      cur: ''
+      cur: '',
+      form: {},
     }
   },
   methods: {
@@ -30,10 +31,10 @@ export default {
       this.$ls.set('test', this.input)
       this.$message({
         type: 'success',
-        message: 'stored in local storage success'
+        message: 'stored in local storage success',
       })
       this.cur = {
-        'test': this.$ls.get('test')
+        test: this.$ls.get('test'),
       }
     },
   },
