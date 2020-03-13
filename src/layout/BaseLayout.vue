@@ -4,14 +4,14 @@
     <header class="navbar">
       <el-row>
         <!-- header logo -->
-        <el-col :span="4">
+        <el-col :span="5">
           <router-link :to="{ name: 'dashboard' }">
             <img class="navbar-logo" src="../assets/img/melodylogo.png" alt="" />
             <span>Melody Configer</span>
           </router-link>
         </el-col>
         <!-- header mid -->
-        <el-col class="navbar-list" :span="15">
+        <el-col class="navbar-list" :span="14">
           <div>
             <span>
               Features
@@ -25,7 +25,16 @@
           </div>
         </el-col>
         <!-- header right -->
-        <el-col :span="5"> </el-col>
+        <el-col :span="5">
+          <el-button
+            @click="exportConfig"
+            class="save_button"
+            type="text"
+            icon="el-icon-download"
+            size="small"
+            >保存配置</el-button
+          >
+        </el-col>
       </el-row>
     </header>
     <!-- 主体部分 -->
@@ -36,8 +45,19 @@
 </template>
 
 <script>
+import FileSaver from 'file-saver'
 export default {
   name: 'BaseLayout',
+  methods: {
+    exportConfig() {
+      let config = this.$ls.get('test')
+      if (config) {
+        let data = JSON.stringify({ test: config }, null, 4)
+        let blob = new Blob([data], { type: '' })
+        FileSaver.saveAs(blob, 'melody.json')
+      }
+    },
+  },
 }
 </script>
 
@@ -80,5 +100,9 @@ a span {
 
 .main {
   min-height: 700px;
+}
+
+.save_button {
+  float: right;
 }
 </style>
