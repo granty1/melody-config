@@ -66,7 +66,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 // values are default one from jv-light template
 .my-awesome-json-theme {
   background: #fff;
