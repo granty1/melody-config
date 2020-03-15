@@ -1,16 +1,16 @@
 <template>
   <div>
-    <el-form :model="config" status-icon label-width="50px">
+    <el-form label-position="top" :model="config" status-icon>
       <el-row type="flex" class="row-bg" justify="space-around">
         <!-- 左侧 -->
         <el-col :span="11" class="container">
-          <!-- service name -->
+          <!-- Service Name -->
           <el-card class="box-card item">
             <div slot="header" class="clearfix">
               <span>Service Name</span>
             </div>
             <div>
-              <el-form-item label="name">
+              <el-form-item label="Name">
                 <el-input
                   v-model="config.name"
                   @input="save"
@@ -23,23 +23,48 @@
             </div>
           </el-card>
 
-          <!-- service name 2 -->
+          <!-- Available hosts -->
+          <el-card class="box-card item">
+            <div slot="header" class="clearfix">
+              <span> Available hosts</span>
+            </div>
+            <div></div>
+          </el-card>
         </el-col>
 
         <!-- 右侧 -->
         <el-col :span="11" class="container">
+          <!-- HTTP Server settings -->
           <el-card class="box-card item">
             <div slot="header" class="clearfix">
               <span>HTTP Server settings</span>
             </div>
             <div>
-              <el-form-item label="port">
+              <!-- Port -->
+              <el-form-item label="Port">
                 <el-input
                   @input="save"
                   v-model="config.port"
                   placeholder="8080"
                   autocomplete="off"
                 ></el-input>
+                <div style="font-size: 12px">
+                  Melody用来监听连接的端口，默认为<code>8080</code>。
+                  也可以在启动时使用标志<code>-p</code>指定该端口。
+                </div>
+              </el-form-item>
+
+              <!-- HTTP Read Timeout -->
+              <el-form-item label="HTTP Read Timeout">
+                <el-input
+                  @input="save"
+                  v-model="config.read_timeout"
+                  placeholder="0s"
+                  autocomplete="off"
+                ></el-input>
+                <div style="font-size: 12px">
+                  读取整个HTTP请求（包括正文）的最大持续时间。
+                </div>
               </el-form-item>
             </div>
           </el-card>

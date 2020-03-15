@@ -4,6 +4,16 @@
   </div>
 </template>
 
+<script>
+export default {
+  mounted() {
+    let config = this.$ls.get('config') === null ? {} : this.$ls.get('config')
+    config.version = 1
+    this.$ls.set('config', config)
+  },
+}
+</script>
+
 <style>
 #app {
   font-family: Comic Sans MS, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Cantarell,
@@ -45,5 +55,13 @@ a {
 
 .box-card {
   width: 100%;
+}
+
+code {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #2752a3;
+  background-color: #f9f2f4;
+  border-radius: 4px;
 }
 </style>
