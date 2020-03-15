@@ -26,7 +26,8 @@ a {
 
 .container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  font-family: Consolas, Menlo, Courier, monospace;
 }
 
 .clearfix:before,
@@ -38,7 +39,11 @@ a {
   clear: both;
 }
 
+.row-bg {
+  padding: 10px 0;
+}
+
 .box-card {
-  width: 40rem;
+  width: 100%;
 }
 </style>

@@ -23,9 +23,24 @@ const routes = [
             component: () => import('../views/service'),
           },
           {
-            path: '/service-discovery',
-            name: 'service-discovery',
-            component: () => import('../views/servicediscovery'),
+            path: '/sd',
+            name: 'sd',
+            component: () => import('../views/sd'),
+          },
+          {
+            path: '/endpoints',
+            name: 'endpoints',
+            component: () => import('../views/endpoints'),
+          },
+          {
+            path: '/logging',
+            name: 'logging',
+            component: () => import('../views/logging'),
+          },
+          {
+            path: '/import',
+            name: 'import',
+            component: () => import('../views/import'),
           },
           {
             path: '*',

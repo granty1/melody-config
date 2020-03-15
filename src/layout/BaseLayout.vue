@@ -14,13 +14,13 @@
         <el-col class="navbar-list" :span="14">
           <div>
             <span>
-              Features
+              特性
             </span>
             <span>
-              Download
+              下载
             </span>
             <span>
-              Documentation
+              功能文档
             </span>
           </div>
         </el-col>
@@ -50,7 +50,7 @@ export default {
   name: 'BaseLayout',
   methods: {
     exportConfig() {
-      let config = this.$ls.get('test')
+      let config = this.$ls.get('config')
       if (config) {
         let data = JSON.stringify({ test: config }, null, 4)
         let blob = new Blob([data], { type: '' })
