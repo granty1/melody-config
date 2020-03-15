@@ -19,4 +19,26 @@
 a {
   text-decoration: none;
 }
+
+.item {
+  margin-bottom: 18px;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: '';
+}
+.clearfix:after {
+  clear: both;
+}
+
+.box-card {
+  width: 40rem;
+}
 </style>

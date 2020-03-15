@@ -2,7 +2,7 @@
   <div>
     <el-container>
       <el-aside class="aside">
-        <el-menu :default-openeds="['1', '1']" router>
+        <el-menu router>
           <el-menu-item index="dashboard" :route="{ name: 'dashboard' }">
             <template slot="title"><i class="el-icon-s-home"></i>Dashboard</template>
           </el-menu-item>
