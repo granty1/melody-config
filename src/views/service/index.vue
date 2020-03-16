@@ -81,6 +81,7 @@
 </template>
 
 <script>
+let needCheckProps = ['name', 'port', 'read_timeout']
 export default {
   name: 'Service',
   data() {
@@ -106,11 +107,12 @@ export default {
     save() {
       this.$refs.config.validate(valid => {
         if (valid) {
-          this.$ls.set('config', this.config)
+          this.$store.commit('updateServiceConfig', this.config)
         } else {
           return false
         }
       })
+      this.$store.commit('removeUselessPropsAtServiceConfigLevel', needCheckProps)
     },
   },
   mounted() {},
