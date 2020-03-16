@@ -52,7 +52,7 @@ export default {
     exportConfig() {
       let config = this.$ls.get('config')
       if (config) {
-        let data = JSON.stringify({ test: config }, null, 4)
+        let data = JSON.stringify(config, null, 4)
         let blob = new Blob([data], { type: '' })
         FileSaver.saveAs(blob, 'melody.json')
       }

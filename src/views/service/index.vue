@@ -1,6 +1,12 @@
 <template>
   <div>
-    <el-form label-position="top" :model="config" status-icon>
+    <el-form
+      label-position="top"
+      ref="config"
+      :model="config"
+      :rules="serviceConfigRules"
+      status-icon
+    >
       <el-row type="flex" class="row-bg" justify="space-around">
         <!-- 左侧 -->
         <el-col :span="11" class="container">
@@ -41,7 +47,7 @@
             </div>
             <div>
               <!-- Port -->
-              <el-form-item label="Port">
+              <el-form-item label="Port" prop="port">
                 <el-input
                   @input="save"
                   v-model="config.port"
@@ -55,7 +61,7 @@
               </el-form-item>
 
               <!-- HTTP Read Timeout -->
-              <el-form-item label="HTTP Read Timeout">
+              <el-form-item label="HTTP Read Timeout" prop="read_timeout">
                 <el-input
                   @input="save"
                   v-model="config.read_timeout"
@@ -78,13 +84,33 @@
 export default {
   name: 'Service',
   data() {
+    let validPort = (rule, value, callback) => {
+      return 'undefined' === typeof value || '' == value || /^[0-9]*$/.test(value)
+        ? callback()
+        : callback(new Error('端口号不能包含除数字以为的其他字符'))
+    }
+    let validReadTimeout = (rule, value, callback) => {
+      return 'undefined' === typeof value || '' == value || /^\d+(ns|us|µs|ms|s|m|h)$/.test(value)
+        ? callback()
+        : callback(new Error('必须以ns、us或µs、ms、s、m、h时间单位结尾，例如300ms'))
+    }
     return {
       config: this.$ls.get('config'),
+      serviceConfigRules: {
+        port: [{ validator: validPort, trigger: 'blur' }],
+        read_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
+      },
     }
   },
   methods: {
     save() {
-      this.$ls.set('config', this.config)
+      this.$refs.config.validate(valid => {
+        if (valid) {
+          this.$ls.set('config', this.config)
+        } else {
+          return false
+        }
+      })
     },
   },
   mounted() {},
