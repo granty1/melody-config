@@ -1,11 +1,13 @@
 <template>
   <div>
-    这里是endpoint
+    {{ this.$route.params }}
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  mounted() {},
+}
 </script>
 
 <style lang="scss" scoped></style>

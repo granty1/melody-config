@@ -2,16 +2,16 @@
   <div>
     <el-container>
       <el-aside class="aside">
-        <el-menu router :default-active="$route.name" @open="toEndpoints">
+        <el-menu router :default-active="$route.name">
           <el-menu-item index="dashboard" :route="{ name: 'dashboard' }">
             <template slot="title"><i class="el-icon-s-home"></i>控制台</template>
           </el-menu-item>
 
-          <el-menu-item index="service">
+          <el-menu-item index="service" :route="{ name: 'service' }">
             <template slot="title"><i class="el-icon-setting"></i>Service配置</template>
           </el-menu-item>
 
-          <el-menu-item index="sd">
+          <el-menu-item index="sd" :route="{ name: 'sd' }">
             <template slot="title"> <i class="el-icon-search"></i>服务发现</template>
           </el-menu-item>
 
@@ -22,7 +22,12 @@
               <span class="title pointer" @click="addEndpoint">添加endpoint</span>
             </el-menu-item-group>
 
-            <el-menu-item v-for="(endpoint, index) in endpoints" :key="index" index="endpoints">
+            <el-menu-item
+              v-for="(endpoint, index) in endpoints"
+              :key="`key-${index}`"
+              :index="index + ''"
+              :route="{ name: 'endpoints', params: { url: index } }"
+            >
               <template slot="title">
                 <i class="el-icon-odometer"></i>
                 <el-tag size="medium" :type="endpoint.method == 'GET' ? 'success' : ''">
@@ -33,11 +38,11 @@
             </el-menu-item>
           </el-submenu>
 
-          <el-menu-item index="logging">
+          <el-menu-item index="logging" :route="{ name: 'logging' }">
             <template slot="title"><i class="el-icon-odometer"></i>日志与指标参数</template>
           </el-menu-item>
 
-          <el-menu-item index="import">
+          <el-menu-item index="import" :route="{ name: 'import' }">
             <template slot="title"><i class="el-icon-upload"></i>导入</template>
           </el-menu-item>
         </el-menu>
@@ -58,18 +63,9 @@ export default {
     }
   },
   methods: {
-    toEndpoints(index) {
-      if (index === 'endpoints' && this.$route.name !== 'endpoints') {
-        this.$router.push('endpoints')
-      }
-    },
     addEndpoint() {
       this.endpoints.push({
         method: 'GET',
-        url: '/new_endpoint',
-      })
-      this.endpoints.push({
-        method: 'POST',
         url: '/new_endpoint',
       })
     },

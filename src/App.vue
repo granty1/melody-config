@@ -37,7 +37,7 @@ a {
 .container {
   display: flex;
   flex-direction: column;
-  font-family: Consolas, Menlo, Courier, monospace;
+  /* font-family: Consolas, Menlo, Courier, monospace; */
 }
 
 .clearfix:before,

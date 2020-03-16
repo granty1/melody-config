@@ -28,7 +28,7 @@ const routes = [
             component: () => import('../views/sd'),
           },
           {
-            path: '/endpoints',
+            path: '/endpoints/:url',
             name: 'endpoints',
             component: () => import('../views/endpoints'),
           },
@@ -53,7 +53,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes,
 })
