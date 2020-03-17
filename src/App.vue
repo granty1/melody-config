@@ -5,8 +5,15 @@
 </template>
 
 <script>
+import { welcomeTitle, welcome} from './utils/util'
 export default {
   mounted() {
+    this.$notify({
+      title: welcomeTitle(),
+      message: welcome(),
+      iconClass: 'el-icon-check',
+      duration: 1000,
+    })
     let config = this.$ls.get('config') === null ? {} : this.$ls.get('config')
     config.version = 1
     this.$ls.set('config', config)

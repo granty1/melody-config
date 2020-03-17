@@ -50,7 +50,6 @@ export default {
   },
   methods: {
     loadJsonFile(file) {
-      console.log(file)
       const reader = new FileReader()
       reader.readAsText(file.raw)
       reader.onload = () => {
