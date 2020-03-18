@@ -1040,7 +1040,7 @@
     lodash.mapvalues "^4.6.0"
     lodash.transform "^4.6.0"
     mini-css-extract-plugin "^0.9.0"
-    minimist "^1.2.0"
+    minimist "^1.2.2"
     pnp-webpack-plugin "^1.6.0"
     portfinder "^1.0.25"
     postcss-loader "^3.0.0"
@@ -4927,14 +4927,14 @@ json5@^1.0.1:
   resolved "https://registry.npm.taobao.org/json5/download/json5-1.0.1.tgz#779fb0018604fa854eacbf6252180d83543e3dbe"
   integrity sha1-d5+wAYYE+oVOrL9iUhgNg1Q+Pb4=
   dependencies:
-    minimist "^1.2.0"
+    minimist "^1.2.2"
 
 json5@^2.1.0:
   version "2.1.1"
   resolved "https://registry.npm.taobao.org/json5/download/json5-2.1.1.tgz#81b6cb04e9ba496f1c7005d07b4368a2638f90b6"
   integrity sha1-gbbLBOm6SW8ccAXQe0NoomOPkLY=
   dependencies:
-    minimist "^1.2.0"
+    minimist "^1.2.2"
 
 jsonfile@^4.0.0:
   version "4.0.0"
