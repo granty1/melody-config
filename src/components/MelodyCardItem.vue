@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-collapse-item :title="title" :disabled="disabled">
+    <el-collapse-item :title="title" :disabled="disabled" :name="title">
       <slot></slot>
     </el-collapse-item>
   </div>

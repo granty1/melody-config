@@ -11,7 +11,7 @@
         <!-- 左侧 -->
         <el-col :span="11" class="container">
           <!-- Service Name -->
-          <melody-card title="Service Name">
+          <melody-card title="Service Name" :openlist="openlist">
             <melody-card-item title="Name">
               <el-input
                 v-model="config.name"
@@ -32,7 +32,7 @@
           <!-- HTTP Server settings -->
           <melody-card title="HTTP Server settings">
             <!-- Port -->
-            <melody-card-item title="Port">
+            <melody-card-item title="Port" :disabled="true">
               <el-form-item prop="port">
                 <el-input
                   @input="save"
@@ -88,6 +88,7 @@ export default {
     }
     return {
       config: this.$ls.get('config'),
+      openlist: ['Name'],
       serviceConfigRules: {
         port: [{ validator: validPort, trigger: 'blur' }],
         read_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
