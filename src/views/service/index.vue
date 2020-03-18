@@ -11,43 +11,29 @@
         <!-- 左侧 -->
         <el-col :span="11" class="container">
           <!-- Service Name -->
-          <el-card class="box-card item">
-            <div slot="header" class="clearfix">
-              <span>Service Name</span>
-            </div>
-            <div>
-              <el-form-item label="Name">
-                <el-input
-                  v-model="config.name"
-                  @input="save"
-                  placeholder="请输入您的Service Name"
-                ></el-input>
-                <div style="font-size: 12px">
-                  友好的名称，标题，日期，版本或任何其他简短描述，可帮助您在打开时识别JSON文件。
-                </div>
-              </el-form-item>
-            </div>
-          </el-card>
+          <melody-card title="Service Name">
+            <melody-card-item title="Name">
+              <el-input
+                v-model="config.name"
+                @input="save"
+                placeholder="请输入您的Service Name"
+              ></el-input>
+              <div style="font-size: 12px">
+                友好的名称，标题，日期，版本或任何其他简短描述，可帮助您在打开时识别JSON文件。
+              </div>
+            </melody-card-item>
+          </melody-card>
 
           <!-- Available hosts -->
-          <el-card class="box-card item">
-            <div slot="header" class="clearfix">
-              <span> Available hosts</span>
-            </div>
-            <div></div>
-          </el-card>
         </el-col>
 
         <!-- 右侧 -->
         <el-col :span="11" class="container">
           <!-- HTTP Server settings -->
-          <el-card class="box-card item">
-            <div slot="header" class="clearfix">
-              <span>HTTP Server settings</span>
-            </div>
-            <div>
-              <!-- Port -->
-              <el-form-item label="Port" prop="port">
+          <melody-card title="HTTP Server settings">
+            <!-- Port -->
+            <melody-card-item title="Port">
+              <el-form-item prop="port">
                 <el-input
                   @input="save"
                   v-model="config.port"
@@ -59,9 +45,11 @@
                   也可以在启动时使用标志<code>-p</code>指定该端口。
                 </div>
               </el-form-item>
+            </melody-card-item>
 
-              <!-- HTTP Read Timeout -->
-              <el-form-item label="HTTP Read Timeout" prop="read_timeout">
+            <!-- HTTP Read Timeout -->
+            <melody-card-item title="HTTP Read Timeout">
+              <el-form-item prop="read_timeout">
                 <el-input
                   @input="save"
                   v-model="config.read_timeout"
@@ -72,8 +60,8 @@
                   读取整个HTTP请求（包括正文）的最大持续时间。
                 </div>
               </el-form-item>
-            </div>
-          </el-card>
+            </melody-card-item>
+          </melody-card>
         </el-col>
       </el-row>
     </el-form>
@@ -81,7 +69,10 @@
 </template>
 
 <script>
+import MelodyCard from '@/components/MelodyCard'
+import MelodyCardItem from '@/components/MelodyCardItem'
 let needCheckProps = ['name', 'port', 'read_timeout']
+
 export default {
   name: 'Service',
   data() {
@@ -102,6 +93,10 @@ export default {
         read_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
       },
     }
+  },
+  components: {
+    MelodyCard,
+    MelodyCardItem,
   },
   methods: {
     save() {

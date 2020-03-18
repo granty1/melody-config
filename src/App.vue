@@ -5,14 +5,14 @@
 </template>
 
 <script>
-import { welcomeTitle, welcome} from './utils/util'
+import { welcomeTitle, welcome } from './utils/util'
 export default {
   mounted() {
     this.$notify({
       title: welcomeTitle(),
       message: welcome(),
       iconClass: 'el-icon-check',
-      duration: 1000,
+      duration: 3000,
     })
     let config = this.$ls.get('config') === null ? {} : this.$ls.get('config')
     config.version = 1
@@ -70,5 +70,9 @@ code {
   color: #2752a3;
   background-color: #f9f2f4;
   border-radius: 4px;
+}
+
+.pointer {
+  cursor: pointer;
 }
 </style>

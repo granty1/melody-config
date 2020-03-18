@@ -10,11 +10,11 @@
         <el-col :span="24" class="container">
           <el-steps :active="cur" align-center>
             <template v-for="(item, index) in stepData">
-              <el-step :key="index" :title="item.title"
-                ><span slot="description" @mouseenter="setCur(index)">{{
-                  item.description
-                }}</span></el-step
-              >
+              <el-step :key="index" :title="item.title">
+                <span class="pointer" slot="description" @mouseenter="setCur(index)">
+                  {{ item.description }}
+                </span>
+              </el-step>
             </template>
           </el-steps>
         </el-col>
