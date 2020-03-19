@@ -1,4 +1,4 @@
-.el-form--label-top .el-form-item__label {
-  font-size: 12px;
-  line-height: 30px;
+.el-form-item__label {
+  font-size: 12px !important;
+  line-height: 30px !important;
 }
