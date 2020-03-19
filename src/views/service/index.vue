@@ -11,16 +11,18 @@
         <!-- 左侧 -->
         <el-col :span="11" class="container">
           <!-- Service Name -->
-          <melody-card title="Service Name" :openlist="openlist">
-            <melody-card-item title="Name">
-              <el-input
-                v-model="config.name"
-                @input="save"
-                placeholder="请输入您的Service Name"
-              ></el-input>
-              <div style="font-size: 12px">
-                友好的名称，标题，日期，版本或任何其他简短描述，可帮助您在打开时识别JSON文件。
-              </div>
+          <melody-card>
+            <melody-card-item title="Service Name">
+              <el-form-item label="Name">
+                <el-input
+                  v-model="config.name"
+                  @input="save"
+                  placeholder="请输入您的Service Name"
+                ></el-input>
+                <div style="font-size: 12px">
+                  友好的名称，标题，日期，版本或任何其他简短描述，可帮助您在打开时识别JSON文件。
+                </div>
+              </el-form-item>
             </melody-card-item>
           </melody-card>
 
@@ -29,11 +31,11 @@
 
         <!-- 右侧 -->
         <el-col :span="11" class="container">
-          <!-- HTTP Server settings -->
-          <melody-card title="HTTP Server settings" :openlist="openlist">
-            <!-- Port -->
-            <melody-card-item title="Port">
-              <el-form-item prop="port">
+          <melody-card>
+            <!-- HTTP Server settings -->
+            <melody-card-item title="HTTP Server settings">
+              <!-- Port -->
+              <el-form-item label="Port" prop="port">
                 <el-input
                   @input="save"
                   v-model="config.port"
@@ -45,11 +47,8 @@
                   也可以在启动时使用标志<code>-p</code>指定该端口。
                 </div>
               </el-form-item>
-            </melody-card-item>
-
-            <!-- HTTP Read Timeout -->
-            <melody-card-item title="HTTP Read Timeout">
-              <el-form-item prop="read_timeout">
+              <!-- HTTP Read Timeout -->
+              <el-form-item label="HTTP Read Timeout" prop="read_timeout">
                 <el-input
                   @input="save"
                   v-model="config.read_timeout"
@@ -71,6 +70,7 @@
 <script>
 import MelodyCard from '@/components/MelodyCard'
 import MelodyCardItem from '@/components/MelodyCardItem'
+
 let needCheckProps = ['name', 'port', 'read_timeout']
 
 export default {
@@ -88,7 +88,6 @@ export default {
     }
     return {
       config: this.$ls.get('config'),
-      openlist: ['Name', 'Port'],
       serviceConfigRules: {
         port: [{ validator: validPort, trigger: 'blur' }],
         read_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],

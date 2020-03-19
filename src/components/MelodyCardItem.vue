@@ -1,15 +1,20 @@
 <template>
-  <div>
-    <el-col :span="span" :offset="offset">
-      <el-collapse-item :title="title" :disabled="disabled" :name="title">
-        <slot></slot>
-      </el-collapse-item>
-    </el-col>
+  <div @click="modify">
+    <el-collapse-item :title="title" :disabled="disabled" :name="p + '-' + title">
+      <slot></slot>
+    </el-collapse-item>
   </div>
 </template>
 
 <script>
+import { modifyActiveCards } from '@/utils/active_cards'
+
 export default {
+  data() {
+    return {
+      p: this.prefix === '' ? this.$route.name : this.prefix,
+    }
+  },
   props: {
     title: {
       type: String,
@@ -19,12 +24,24 @@ export default {
       type: Boolean,
       default: false,
     },
-    span: {
-      type: Number,
-      default: 24,
+    remember: {
+      type: Boolean,
+      default: true,
     },
-    offset: {
-      type: Number,
+    prefix: {
+      type: String,
+      default: '',
+    },
+  },
+  methods: {
+    modify() {
+      if (this.remember) {
+        if (this.prefix === '') {
+          modifyActiveCards(this.$route.name + '-' + this.title)
+        } else {
+          modifyActiveCards(this.prefix + '-' + this.title)
+        }
+      }
     },
   },
 }
