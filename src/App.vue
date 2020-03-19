@@ -16,7 +16,10 @@ export default {
     })
     let config = this.$ls.get('config') === null ? {} : this.$ls.get('config')
     config.version = 1
-    this.$ls.set('config', config)
+    this.$store.commit('updateServiceConfig', config)
+
+    let activeCards = this.$ls.get('active_cards') === null ? [] : this.$ls.get('active_cards')
+    this.$store.commit('updateActiveCards', activeCards)
   },
 }
 </script>

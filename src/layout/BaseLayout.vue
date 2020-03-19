@@ -34,6 +34,15 @@
             size="small"
             >保存配置</el-button
           >
+
+          <el-button
+            @click="clearCache"
+            class="save_button"
+            type="text"
+            icon="el-icon-refresh"
+            size="small"
+            >清除缓存</el-button
+          >
         </el-col>
       </el-row>
     </header>
@@ -46,16 +55,34 @@
 
 <script>
 import FileSaver from 'file-saver'
+import { Loading } from 'element-ui'
 export default {
   name: 'BaseLayout',
   methods: {
     exportConfig() {
       let config = this.$ls.get('config')
       if (config) {
+        let loadingInstance = Loading.service({
+          fullscreen: true,
+          spinner: 'el-icon-loading',
+          text: 'Loading',
+          background: 'rgba(0, 0, 0, 0.8)',
+        })
         let data = JSON.stringify(config, null, 4)
         let blob = new Blob([data], { type: '' })
-        FileSaver.saveAs(blob, 'melody.json')
+        setTimeout(() => {
+          this.$nextTick(() => {
+            // 以服务的方式调用的 Loading 需要异步关闭
+            loadingInstance.close()
+            FileSaver.saveAs(blob, 'melody.json')
+          })
+        }, 2500)
       }
+    },
+    clearCache() {
+      this.$msgbox('hello')
+
+      this.$store.commit('updateServiceConfig', { version: 1 })
     },
   },
 }
