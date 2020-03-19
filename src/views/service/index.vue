@@ -6,7 +6,7 @@
         <el-col :span="11" class="container">
           <!-- Service Name -->
           <melody-card>
-            <melody-card-item title="Service Name">
+            <melody-card-item title="Service Name" open>
               <el-form-item label="Name">
                 <el-input
                   v-model="config.name"

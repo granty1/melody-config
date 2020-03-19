@@ -62,6 +62,19 @@ const mutations = {
     }
   },
   /**
+   * 增加Ls和Vuex中的activeCards
+   * @param {*} state
+   * @param {*} actives 当前需要激活的card的name
+   */
+  addActiveCards(state, name) {
+    let actives = state.activeCards
+    let index = actives.indexOf(name)
+    if (index == -1) {
+      actives.push(name)
+      this.commit('updateActiveCards', actives)
+    }
+  },
+  /**
    * 更新Ls和Vuex中的activeCards
    * @param {*} state
    * @param {*} actives 当前需要激活的card的name
