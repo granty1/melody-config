@@ -18,9 +18,21 @@
                 </div>
               </el-form-item>
             </melody-card-item>
+            <!-- Available hosts -->
+            <melody-card-item title="Available hosts" open>
+              <el-form-item label="address">
+                <el-input
+                  v-model="config.address"
+                  @input="save"
+                  placeholder="请输入您的Available hosts"
+                ></el-input>
+                <div style="font-size: 12px">
+                  The address where KrakenD connects to. Some valid examples can be https://myapi,
+                  amqp://host, 192.0.2.1:25, my.service.tld.
+                </div>
+              </el-form-item>
+            </melody-card-item>
           </melody-card>
-
-          <!-- Available hosts -->
         </el-col>
 
         <!-- 右侧 -->

@@ -1,6 +1,11 @@
 <template>
-  <div @click="modify">
-    <el-collapse-item :title="title" :disabled="disabled" :name="p + '-' + title">
+  <div>
+    <el-collapse-item :disabled="disabled" :name="p + '-' + title">
+      <template slot="title">
+        <div @click="modify" style="width: 100%;">
+          {{ title }}
+        </div>
+      </template>
       <slot></slot>
     </el-collapse-item>
   </div>
@@ -39,6 +44,7 @@ export default {
   },
   methods: {
     modify() {
+      console.log('modify')
       if (this.remember) {
         if (this.prefix === '') {
           modifyActiveCards(this.$route.name + '-' + this.title)
@@ -63,4 +69,10 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.title {
+  width: 100%;
+  height: 48px;
+  background-color: #333333;
+}
+</style>
