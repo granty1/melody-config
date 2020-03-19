@@ -30,9 +30,9 @@
         <!-- 右侧 -->
         <el-col :span="11" class="container">
           <!-- HTTP Server settings -->
-          <melody-card title="HTTP Server settings">
+          <melody-card title="HTTP Server settings" :openlist="openlist">
             <!-- Port -->
-            <melody-card-item title="Port" :disabled="true">
+            <melody-card-item title="Port">
               <el-form-item prop="port">
                 <el-input
                   @input="save"
@@ -88,7 +88,7 @@ export default {
     }
     return {
       config: this.$ls.get('config'),
-      openlist: ['Name'],
+      openlist: ['Name', 'Port'],
       serviceConfigRules: {
         port: [{ validator: validPort, trigger: 'blur' }],
         read_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
