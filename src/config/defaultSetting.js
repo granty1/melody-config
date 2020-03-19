@@ -4,4 +4,6 @@ export default {
     name: 'ls', // use Vue.ls or $ls
     storage: 'local',
   },
+
+  defaultActiveCards: ['service-Service Name', 'service-HTTP Server settings', 'logging-Logging'],
 }

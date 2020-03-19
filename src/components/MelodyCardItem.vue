@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { modifyActiveCards, addActiveCards } from '@/utils/active_cards'
+import { modifyActiveCards } from '@/utils/active_cards'
 
 export default {
   data() {
@@ -32,10 +32,6 @@ export default {
       type: String,
       default: '',
     },
-    open: {
-      type: Boolean,
-      default: false,
-    },
   },
   methods: {
     modify() {
@@ -47,18 +43,6 @@ export default {
         }
       }
     },
-    add() {
-      if (this.prefix === '') {
-        addActiveCards(this.$route.name + '-' + this.title)
-      } else {
-        addActiveCards(this.prefix + '-' + this.title)
-      }
-    },
-  },
-  mounted() {
-    if (this.open) {
-      this.add()
-    }
   },
 }
 </script>

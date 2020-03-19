@@ -6,6 +6,7 @@
 
 <script>
 import { welcomeTitle, welcome } from './utils/util'
+import defaultSetting from '@/config/defaultSetting'
 export default {
   mounted() {
     this.$notify({
@@ -18,7 +19,10 @@ export default {
     config.version = 1
     this.$store.commit('updateServiceConfig', config)
 
-    let activeCards = this.$ls.get('active_cards') === null ? [] : this.$ls.get('active_cards')
+    let activeCards =
+      this.$ls.get('active_cards') === null
+        ? defaultSetting.defaultActiveCards
+        : this.$ls.get('active_cards')
     this.$store.commit('updateActiveCards', activeCards)
   },
 }

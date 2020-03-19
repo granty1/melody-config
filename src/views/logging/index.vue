@@ -10,7 +10,15 @@
               <!-- Level -->
               <el-col :span="11">
                 <el-form-item label="Level">
-                  <el-input v-model="logging.base.level"></el-input>
+                  <el-select v-model="logging.base.prefix">
+                    <el-option
+                      v-for="item in logLevels"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    >
+                    </el-option>
+                  </el-select>
                   <div style="font-size: 12px">
                     选择日志打印的级别。
                   </div>
@@ -42,6 +50,10 @@
           <melody-card>
             <!-- Gelf -->
             <melody-card-item title="Gelf">
+              <div>展开</div>
+            </melody-card-item>
+
+            <melody-card-item title="Gelf2">
               <div>展开</div>
             </melody-card-item>
           </melody-card>
@@ -83,6 +95,7 @@ export default {
           prefix: '[Melody]',
         },
       },
+      logLevels: ['DEBUG', 'ERROR'],
     }
   },
 }
