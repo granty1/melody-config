@@ -13,13 +13,13 @@
         <!-- header mid -->
         <el-col class="navbar-list" :span="14">
           <div>
-            <span>
+            <span @click="goto('https://granty1.github.io/melody-web/')">
               特性
             </span>
-            <span>
+            <span @click="goto('https://github.com/granty1/melody/releases/tag/v1.0.0')">
               下载
             </span>
-            <span>
+            <span @click="goto('https://granty1.github.io/melody-docs/')">
               功能文档
             </span>
           </div>
@@ -59,6 +59,9 @@ import { Loading } from 'element-ui'
 export default {
   name: 'BaseLayout',
   methods: {
+    goto(url) {
+      window.location.href = url
+    },
     exportConfig() {
       let config = this.$ls.get('config')
       if (config) {
@@ -114,8 +117,8 @@ a span {
 
 .navbar-list span {
   margin-right: 1.3rem;
-  font-size: 1.2rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 300;
   cursor: pointer;
 }
 
