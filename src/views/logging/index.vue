@@ -159,6 +159,7 @@ export default {
     MelodyCardItem,
   },
   mounted() {
+    this.logging.exampleLog = this.exampleLogs[0]
     let loggingConfig = this.$store.getters.loggingConfig
     if (loggingConfig && loggingConfig.base != null) {
       this.logging = loggingConfig
