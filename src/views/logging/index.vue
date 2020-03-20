@@ -53,7 +53,7 @@
                 <el-col :span="logging.enableCustomFormat ? 11 : 24">
                   <el-form-item label="Message Format">
                     <el-select
-                      @change="customFormat"
+                      @change="messageFormatHandle"
                       :disabled="!logging.baseLoggerEnable"
                       v-model="logging.base.format"
                       placeholder="选择日志格式"
@@ -84,7 +84,12 @@
                   </el-form-item>
                 </el-col>
               </el-row>
-
+              <!-- Log Example -->
+              <el-row v-if="logging.base.format != 'custom'">
+                <el-col :span="24">
+                  示例：<code>{{ logging.exampleLog }}</code>
+                </el-col>
+              </el-row>
               <!-- Log stash -->
               <el-form-item label="LogStash">
                 <el-switch
@@ -121,10 +126,6 @@
           <melody-card>
             <!-- Gelf -->
             <melody-card-item title="Gelf">
-              <div>展开</div>
-            </melody-card-item>
-
-            <melody-card-item title="Gelf2">
               <div>展开</div>
             </melody-card-item>
           </melody-card>
@@ -165,6 +166,12 @@ export default {
   },
   data() {
     return {
+      logLevels: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+      formats: ['default', 'custom', 'logstash'],
+      exampleLogs: [
+        '[MELODY]2020/03/20 - 14:12:02.770 ▶ DEBUG [name: some message]',
+        '{"@timestamp":"2000-03-20T13:24:24.348+00:00", "@version": 1, "level": "DEBUG", "message": "[name: some message]", "module": "MELODY"}',
+      ],
       logging: {
         // base log
         base: {
@@ -175,9 +182,8 @@ export default {
         logstashEnable: false,
         baseLoggerEnable: false,
         enableCustomFormat: false,
+        exampleLog: '',
       },
-      logLevels: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-      formats: ['default', 'custom', 'logstash'],
     }
   },
   methods: {
@@ -185,13 +191,27 @@ export default {
       if (value) {
         this.logging.base.format = 'logstash'
         this.logging.enableCustomFormat = false
+        this.logging.exampleLog = this.exampleLogs[1]
         this.$store.dispatch('updateLogStash', true)
       } else {
         this.$store.dispatch('updateLogStash', false)
       }
       this.updateLogging()
     },
-    customFormat(value) {
+    messageFormatHandle(value) {
+      switch (value) {
+        case this.formats[0]:
+          this.logging.exampleLog = this.exampleLogs[0]
+          break
+        case this.formats[1]:
+          this.logging.enableCustomFormat = true
+          break
+        case this.formats[2]:
+          this.logging.exampleLog = this.exampleLogs[1]
+          break
+        default:
+          break
+      }
       this.logging.enableCustomFormat = value == 'custom' ? true : false
       this.updateLogging()
     },
