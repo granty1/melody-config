@@ -8,9 +8,9 @@
           Configer。该应用程序创建Melody服务加载的配置。为了正确配置服务，请至少执行以下步骤：
         </div>
         <el-col :span="24" class="container">
-          <el-steps :active="cur" align-center>
+          <el-steps :active="cur" align-center finish-status="process">
             <template v-for="(item, index) in stepData">
-              <el-step :key="index" :title="item.title">
+              <el-step :key="index" :title="item.title" >
                 <span class="pointer" slot="description" @mouseenter="setCur(index)">
                   {{ item.description }}
                 </span>

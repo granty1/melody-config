@@ -4,11 +4,11 @@
       <el-aside class="aside">
         <el-menu router :default-active="$route.name">
           <el-menu-item index="dashboard" :route="{ name: 'dashboard' }">
-            <template slot="title"><i class="el-icon-s-home"></i>控制台</template>
+            <template slot="title"><i class="el-icon-edit"></i>开始</template>
           </el-menu-item>
 
           <el-menu-item index="service" :route="{ name: 'service' }">
-            <template slot="title"><i class="el-icon-setting"></i>Service配置</template>
+            <template slot="title"><i class="el-icon-setting"></i>Service</template>
           </el-menu-item>
 
           <el-menu-item index="sd" :route="{ name: 'sd' }">
@@ -39,11 +39,11 @@
           </el-submenu>
 
           <el-menu-item index="logging" :route="{ name: 'logging' }">
-            <template slot="title"><i class="el-icon-odometer"></i>日志与指标参数</template>
+            <template slot="title"><i class="el-icon-odometer"></i>日志与监控</template>
           </el-menu-item>
 
           <el-menu-item index="import" :route="{ name: 'import' }">
-            <template slot="title"><i class="el-icon-upload"></i>配置预览、导入</template>
+            <template slot="title"><i class="el-icon-upload"></i>配置生成</template>
           </el-menu-item>
         </el-menu>
       </el-aside>
