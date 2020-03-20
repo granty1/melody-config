@@ -43,7 +43,7 @@
           </el-menu-item>
 
           <el-menu-item index="import" :route="{ name: 'import' }">
-            <template slot="title"><i class="el-icon-upload"></i>导入</template>
+            <template slot="title"><i class="el-icon-upload"></i>配置预览、导入</template>
           </el-menu-item>
         </el-menu>
       </el-aside>

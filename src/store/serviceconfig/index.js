@@ -72,6 +72,28 @@ const mutations = {
       Vue.ls.set('active_cards', actives)
     }
   },
+  addOrRemoveExtraConfig(state, config) {
+    let serviceConfig = state.serviceConfig
+    let obj = {}
+    obj[config.key] = config.value
+    switch (config.operation) {
+      case 'add':
+        if (serviceConfig['extra_config'] != undefined) {
+          serviceConfig['extra_config'][config.key] = config.value
+        } else {
+          serviceConfig['extra_config'] = obj
+        }
+        break
+      case 'remove':
+        if (serviceConfig['extra_config'] && serviceConfig['extra_config'][config.key]) {
+          delete serviceConfig['extra_config'][config.key]
+        }
+        break
+      default:
+        break
+    }
+    this.commit('updateServiceConfig', serviceConfig)
+  },
 }
 
 export default {

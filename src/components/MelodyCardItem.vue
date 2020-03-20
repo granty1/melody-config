@@ -40,7 +40,6 @@ export default {
   },
   methods: {
     modify() {
-      console.log('modify')
       if (this.remember) {
         if (this.prefix === '') {
           modifyActiveCards(this.$route.name + '-' + this.title)

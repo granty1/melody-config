@@ -83,6 +83,7 @@ export default {
       this.$msgbox('hello')
 
       this.$store.commit('updateServiceConfig', { version: 1 })
+      this.$ls.remove('logging')
     },
   },
 }

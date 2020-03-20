@@ -1,6 +1,12 @@
 <template>
   <div>
-    <el-form ref="config" :model="config" :rules="serviceConfigRules" status-icon>
+    <el-form
+      label-position="top"
+      ref="config"
+      :model="config"
+      :rules="serviceConfigRules"
+      status-icon
+    >
       <el-row type="flex" class="row-bg" justify="space-around">
         <!-- 左侧 -->
         <el-col :span="11" class="container">

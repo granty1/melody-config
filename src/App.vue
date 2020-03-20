@@ -24,6 +24,9 @@ export default {
         ? defaultSetting.defaultActiveCards
         : this.$ls.get('active_cards')
     this.$store.commit('updateActiveCards', activeCards)
+
+    let loggingConfig = this.$ls.get('logging') === null ? {} : this.$ls.get('logging')
+    this.$store.dispatch('updateLogging', loggingConfig)
   },
 }
 </script>
