@@ -5,5 +5,10 @@ export default {
     storage: 'local',
   },
 
-  defaultActiveCards: ['service-Service Name', 'service-HTTP Server settings', 'logging-Logging'],
+  defaultActiveCards: [
+    'service-Service Name',
+    'service-HTTP Server settings',
+    'logging-Logging',
+    'logging-Gelf',
+  ],
 }

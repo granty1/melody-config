@@ -26,7 +26,7 @@ export default {
     this.$store.commit('updateActiveCards', activeCards)
 
     let loggingConfig = this.$ls.get('logging') === null ? {} : this.$ls.get('logging')
-    this.$store.dispatch('updateLogging', loggingConfig)
+    this.$store.dispatch('updateBaseLogger', { logging: loggingConfig, add: true })
   },
 }
 </script>

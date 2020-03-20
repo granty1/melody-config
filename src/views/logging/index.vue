@@ -7,13 +7,13 @@
           <melody-card>
             <!-- Base Logging -->
             <melody-card-item title="Logging">
-              <el-form-item label="melody logger">
+              <el-form-item label="base logger">
                 <el-switch
                   @change="baseLogerEnableHandle"
                   v-model="logging.baseLoggerEnable"
                 ></el-switch>
                 <div style="font-size: 12px">
-                  Melody提供了比较完善的logger。
+                  Melody提供了比较完善的基础logger。
                 </div>
               </el-form-item>
               <template v-if="logging.baseLoggerEnable">
@@ -24,7 +24,7 @@
                       <el-select
                         :disabled="!logging.baseLoggerEnable"
                         v-model="logging.base.level"
-                        @change="updateLogging"
+                        @change="updateBaseLogger"
                         placeholder="选择log级别"
                       >
                         <el-option
@@ -46,7 +46,7 @@
                       <el-input
                         :disabled="!logging.baseLoggerEnable"
                         v-model="logging.base.prefix"
-                        @input="updateLogging"
+                        @input="updateBaseLogger"
                       ></el-input>
                       <div style="font-size: 12px">
                         在日志行之前添加字符串前缀。
@@ -76,7 +76,7 @@
                   <el-col v-if="logging.enableCustomFormat" :span="11" :offset="2">
                     <el-form-item label="Custom log format">
                       <el-input
-                        @input="updateLogging"
+                        @input="updateBaseLogger"
                         v-model="logging.base.custom"
                         placeholder="%{message}"
                       ></el-input>
@@ -109,13 +109,13 @@
                 <!-- Writers -->
                 <el-form-item label="Writers">
                   <el-checkbox
-                    @change="updateLogging"
+                    @change="updateBaseLogger"
                     :disabled="!logging.baseLoggerEnable"
                     v-model="logging.base.syslog"
                     >Syslog</el-checkbox
                   >
                   <el-checkbox
-                    @change="updateLogging"
+                    @change="updateBaseLogger"
                     :disabled="!logging.baseLoggerEnable"
                     v-model="logging.base.stdout"
                     >Stdout</el-checkbox
@@ -133,7 +133,30 @@
           <melody-card>
             <!-- Gelf -->
             <melody-card-item title="Gelf">
-              <div>展开</div>
+              <el-form-item label="gelf integrate">
+                <el-switch @change="gelfEnableHandle" v-model="logging.gelfEnable"></el-switch>
+                <div style="font-size: 12px">
+                  Melody与gelf集成，你可以设置Graylog服务的地址来作为输出。
+                </div>
+              </el-form-item>
+              <template v-if="logging.gelfEnable">
+                <el-form-item label="Address">
+                  <el-input
+                    @change="updateGelf"
+                    v-model="logging.gelf.addr"
+                    placeholder="gelf_server:12201"
+                  ></el-input>
+                  <div style="font-size: 12px">
+                    Graylog服务器（或任何接收gelf输入的服务）的地址（包括端口）。
+                  </div>
+                </el-form-item>
+                <el-form-item label="Enable TCP">
+                  <el-switch @change="updateGelf" v-model="logging.gelf.enable_tcp"></el-switch>
+                  <div style="font-size: 12px">
+                    默认情况下使用UDP，但您可以通过将此选项设置为true来启用TCP（不推荐，您的性能可能会受到影响）。
+                  </div>
+                </el-form-item>
+              </template>
             </melody-card-item>
           </melody-card>
 
@@ -187,8 +210,13 @@ export default {
           level: 'DEBUG',
           format: 'default',
         },
+        gelf: {
+          addr: '',
+          enable_tcp: false,
+        },
         logstashEnable: false,
         baseLoggerEnable: false,
+        gelfEnable: false,
         enableCustomFormat: false,
         exampleLog: '',
       },
@@ -204,7 +232,7 @@ export default {
       } else {
         this.$store.dispatch('updateLogStash', false)
       }
-      this.updateLogging()
+      this.$store.commit('updateLoggingState', this.logging)
     },
     messageFormatHandle(value) {
       switch (value) {
@@ -221,18 +249,35 @@ export default {
           break
       }
       this.logging.enableCustomFormat = value == 'custom' ? true : false
-      this.updateLogging()
+      this.updateBaseLogger()
     },
     baseLogerEnableHandle(enable) {
       if (enable) {
-        this.updateLogging()
+        this.updateBaseLogger()
       } else {
-        this.$store.dispatch('removeBaseLogging')
+        this.$store.dispatch('updateBaseLogger', { logging: this.logging, add: false })
         this.$ls.remove('logging')
       }
     },
-    updateLogging() {
-      this.$store.dispatch('updateLogging', this.logging)
+    gelfEnableHandle(enable) {
+      if (enable) {
+        if (!this.logging.baseLoggerEnable) {
+          this.$message({
+            type: 'warning',
+            message: '还未启用base logger，此选项可能配置无效',
+          })
+        } else {
+          this.updateGelf()
+        }
+      } else {
+        this.$store.dispatch('updateGelf', { logging: this.logging, add: false })
+      }
+    },
+    updateBaseLogger() {
+      this.$store.dispatch('updateBaseLogger', { logging: this.logging, add: true })
+    },
+    updateGelf() {
+      this.$store.dispatch('updateGelf', { logging: this.logging, add: true })
     },
   },
 }
