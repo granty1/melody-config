@@ -135,5 +135,8 @@ a span {
 
 .save_button {
   float: right;
+  color: #2c3e50;
+  font-weight: 200;
+  margin-left: 1rem;
 }
 </style>
