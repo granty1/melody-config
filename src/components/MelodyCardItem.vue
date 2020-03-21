@@ -2,7 +2,7 @@
   <div>
     <el-collapse-item :disabled="disabled" :name="p + '-' + title">
       <template slot="title">
-        <div @click="modify" style="width: 100%;">
+        <div @click="modify" style="width: 100%;font-size: 16px;">
           {{ title }}
         </div>
       </template>

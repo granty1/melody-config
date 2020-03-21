@@ -65,7 +65,7 @@
               <div class="sf12">
                 除非在每个endpoint中明确覆盖，否则以下所有设置将在所有backend中使用
               </div>
-              <el-form-item label="Backend Timeout" prop="time">
+              <el-form-item label="Backend Timeout" prop="timeout">
                 <el-input v-model="config.timeout" @input="save" placeholder="3000ms"></el-input>
                 <div class="fs12">
                   友好的名称，标题，日期，版本或任何其他简短描述，可帮助您在打开时识别JSON文件。
@@ -94,7 +94,7 @@
                 </div>
               </el-form-item>
               <!-- HTTP Read Timeout -->
-              <el-form-item label="HTTP Read Timeout" prop="time">
+              <el-form-item label="HTTP Read Timeout" prop="read_timeout">
                 <el-input
                   @input="save"
                   v-model="config.read_timeout"
@@ -118,7 +118,7 @@ import MelodyCard from '@/components/MelodyCard'
 import MelodyCardItem from '@/components/MelodyCardItem'
 import { validTimeDuration, validNumber } from '@/utils/regxp'
 
-let needCheckProps = ['name', 'port', 'time']
+let needCheckProps = ['name', 'port', 'read_timeout', 'timeout']
 
 export default {
   name: 'Service',
@@ -133,7 +133,8 @@ export default {
       config: this.$ls.get('config'),
       serviceConfigRules: {
         port: [{ validator: validPort, trigger: 'blur' }],
-        time: [{ validator: validReadTimeout, trigger: 'blur' }],
+        read_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
+        timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
       },
       sdType: 'Static address resolution',
       etcdDisabled: true,
@@ -146,17 +147,25 @@ export default {
   },
   methods: {
     save() {
-      this.$refs.config.validate(valid => {
-        if (valid) {
-          this.$store.commit('updateServiceConfig', this.config)
-        } else {
-          return false
-        }
+      this.$refs.config.validate().catch(err => {
+        console.log(err)
       })
+      this.$store.commit('updateServiceConfig', this.config)
       this.$store.commit('removeUselessPropsAtServiceConfigLevel', needCheckProps)
     },
   },
   mounted() {},
+  beforeRouteLeave(to, from, next) {
+    this.$refs.config.validate(valid => {
+      if (valid) {
+        next()
+      } else {
+        this.$alert('填写正确的内容哟yoooooo', '发生错误啦', {
+          confirmButtonText: '好滴',
+        })
+      }
+    })
+  },
 }
 </script>
 
