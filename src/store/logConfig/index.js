@@ -82,6 +82,30 @@ const actions = {
       })
     }
   },
+  /**
+   * 更新或移除serviceConfig级别下extra_config中的metrics配置
+   * @param {*} store
+   * @param {*} param1 { logging: logging对象, add: 是否为更新操作 }
+   */
+  updateMetrics(store, { logging, add }) {
+    this.commit('updateLoggingState', logging)
+    const { commit } = store
+    if (add) {
+      if (logging.metrics != null) {
+        commit('addOrRemoveExtraConfig', {
+          key: 'melody_metrics',
+          value: logging.metrics,
+          operation: 'add',
+        })
+      }
+    } else {
+      commit('addOrRemoveExtraConfig', {
+        key: 'melody_metrics',
+        value: null,
+        operation: 'remove',
+      })
+    }
+  },
 }
 
 const mutations = {

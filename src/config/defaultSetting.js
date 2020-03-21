@@ -10,5 +10,6 @@ export default {
     'service-HTTP Server settings',
     'logging-Logging',
     'logging-Gelf',
+    'logging-Metrics',
   ],
 }

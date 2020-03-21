@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form label-position="top" ref="logging" :model="logging" status-icon>
+    <el-form label-position="top" ref="logging" :model="logging" :rules="loggingRules" status-icon>
       <el-row type="flex" class="row-bg" justify="space-around">
         <!-- 左侧 -->
         <el-col :span="11" class="container">
@@ -127,6 +127,13 @@
               </template>
             </melody-card-item>
           </melody-card>
+
+          <melody-card>
+            <!-- Opencensus -->
+            <melody-card-item title="Opencensus">
+              <div>集成中~~</div>
+            </melody-card-item>
+          </melody-card>
         </el-col>
         <!-- 右侧 -->
         <el-col :span="11" class="container">
@@ -163,14 +170,114 @@
           <melody-card>
             <!-- Metrics -->
             <melody-card-item title="Metrics">
-              <div>展开</div>
-            </melody-card-item>
-          </melody-card>
+              <!-- metrics enable switch -->
+              <el-form-item label="metrics integrate">
+                <el-switch
+                  @change="metricsEnableHandle"
+                  v-model="logging.metricsEnable"
+                ></el-switch>
+                <div style="font-size: 12px">
+                  metrics中间件收集整个melody的运行时数据，监听一个新端口，暴露<code>/__stats/</code>接口。
+                </div>
+              </el-form-item>
 
-          <melody-card>
-            <!-- Opencensus -->
-            <melody-card-item title="Opencensus">
-              <div>展开</div>
+              <template v-if="logging.metricsEnable">
+                <!-- metrics config -->
+                <el-form-item label="Config">
+                  <!-- Disable /__stats/ -->
+                  <el-row type="flex" class="row-bg" justify="space-around">
+                    <el-col :span="11">
+                      <el-checkbox
+                        @change="updateMetrics"
+                        v-model="logging.metrics.endpoint_disabled"
+                        label="Disable '/__stats/'"
+                      ></el-checkbox>
+                    </el-col>
+                    <el-col :span="11">
+                      <div style="font-size: 12px">
+                        metrics将不会暴露<code>/__stats/</code>接口，但是仍然会收集数据。
+                      </div>
+                    </el-col>
+                  </el-row>
+                  <!-- Disable proxy -->
+                  <el-row type="flex" class="row-bg" justify="space-around">
+                    <el-col :span="11">
+                      <el-checkbox
+                        @change="updateMetrics"
+                        v-model="logging.metrics.proxy_disabled"
+                        label="Disable proxy"
+                      ></el-checkbox>
+                    </el-col>
+                    <el-col :span="11">
+                      <div style="font-size: 12px">
+                        metrics将跳过代理层中的数据收集。
+                      </div>
+                    </el-col>
+                  </el-row>
+
+                  <!-- Disable router -->
+                  <el-row type="flex" class="row-bg" justify="space-around">
+                    <el-col :span="11">
+                      <el-checkbox
+                        @change="updateMetrics"
+                        v-model="logging.metrics.router_disabled"
+                        label="Disable router"
+                      ></el-checkbox>
+                    </el-col>
+                    <el-col :span="11">
+                      <div style="font-size: 12px">
+                        metrics将跳过路由层中的数据收集。
+                      </div>
+                    </el-col>
+                  </el-row>
+
+                  <!-- Disable backends -->
+                  <el-row type="flex" class="row-bg" justify="space-around">
+                    <el-col :span="11">
+                      <el-checkbox
+                        @change="updateMetrics"
+                        v-model="logging.metrics.backend_disabled"
+                        label="Disable backend layer metrics"
+                      ></el-checkbox>
+                    </el-col>
+                    <el-col :span="11">
+                      <div style="font-size: 12px">
+                        与后端交互时，metrics将不会收集任何数据。
+                      </div>
+                    </el-col>
+                  </el-row>
+                </el-form-item>
+
+                <el-row type="flex" class="row-bg" justify="space-around">
+                  <!-- Listen address -->
+                  <el-col :span="11">
+                    <el-form-item label="Listen Address">
+                      <el-input
+                        @change="updateMetrics"
+                        placeholder=":8090"
+                        v-model="logging.metrics.listen_address"
+                      ></el-input>
+                      <div style="font-size: 12px">
+                        你可以通过<code>{{ logging.metrics.listen_address }}/__stats/</code
+                        >访问到metrics收集到的所有数据。
+                      </div>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="11">
+                    <el-form-item label="Collection time" prop="metrics.collection_time">
+                      <el-input
+                        @input="updateMetrics"
+                        placeholder="60s"
+                        v-model="logging.metrics.collection_time"
+                        autocomplete="off"
+                      ></el-input>
+                      <div style="font-size: 12px">
+                        收集的时间窗口。默认为60秒。
+                      </div>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </template>
             </melody-card-item>
           </melody-card>
         </el-col>
@@ -182,6 +289,7 @@
 <script>
 import MelodyCard from '@/components/MelodyCard'
 import MelodyCardItem from '@/components/MelodyCardItem'
+import { validTimeDuration } from '@/utils/regxp'
 export default {
   name: 'logging',
   components: {
@@ -196,6 +304,9 @@ export default {
     }
   },
   data() {
+    let validMetricsCollectionTime = (rule, value, callback) => {
+      return validTimeDuration(value, callback)
+    }
     return {
       logLevels: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
       formats: ['default', 'custom', 'logstash'],
@@ -203,6 +314,11 @@ export default {
         '[MELODY]2020/03/20 - 14:12:02.770 ▶ DEBUG [name: some message]',
         '{"@timestamp":"2000-03-20T13:24:24.348+00:00", "@version": 1, "level": "DEBUG", "message": "[name: some message]", "module": "MELODY"}',
       ],
+      loggingRules: {
+        metrics: {
+          collection_time: [{ validator: validMetricsCollectionTime, trigger: 'blur' }],
+        },
+      },
       logging: {
         // base log
         base: {
@@ -214,9 +330,18 @@ export default {
           addr: '',
           enable_tcp: false,
         },
+        metrics: {
+          endpoint_disabled: false,
+          proxy_disabled: false,
+          router_disabled: false,
+          backend_disabled: false,
+          collection_time: '',
+          listen_address: ':8090',
+        },
         logstashEnable: false,
         baseLoggerEnable: false,
         gelfEnable: false,
+        metricsEnable: false,
         enableCustomFormat: false,
         exampleLog: '',
       },
@@ -266,18 +391,31 @@ export default {
             type: 'warning',
             message: '还未启用base logger，此选项可能配置无效',
           })
-        } else {
-          this.updateGelf()
         }
+        this.updateGelf()
       } else {
         this.$store.dispatch('updateGelf', { logging: this.logging, add: false })
       }
+    },
+    metricsEnableHandle(enable) {
+      enable
+        ? this.updateMetrics()
+        : this.$store.dispatch('updateMetrics', { logging: this.logging, add: false })
     },
     updateBaseLogger() {
       this.$store.dispatch('updateBaseLogger', { logging: this.logging, add: true })
     },
     updateGelf() {
       this.$store.dispatch('updateGelf', { logging: this.logging, add: true })
+    },
+    updateMetrics() {
+      this.$refs.logging.validate(valid => {
+        if (valid) {
+          this.$store.dispatch('updateMetrics', { logging: this.logging, add: true })
+        } else {
+          return false
+        }
+      })
     },
   },
 }

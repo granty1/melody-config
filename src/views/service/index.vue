@@ -12,7 +12,7 @@
         <el-col :span="11" class="container">
           <!-- Service Name -->
           <melody-card>
-            <melody-card-item title="Service Name" open>
+            <melody-card-item title="Service Name">
               <el-form-item label="Name">
                 <el-input
                   v-model="config.name"
@@ -25,7 +25,7 @@
               </el-form-item>
             </melody-card-item>
             <!-- Available hosts -->
-            <melody-card-item title="Available hosts" open>
+            <melody-card-item title="Available hosts">
               <el-form-item label="address">
                 <el-input
                   v-model="config.address"
@@ -82,6 +82,7 @@
 <script>
 import MelodyCard from '@/components/MelodyCard'
 import MelodyCardItem from '@/components/MelodyCardItem'
+import { validTimeDuration, validNumber } from '@/utils/regxp'
 
 let needCheckProps = ['name', 'port', 'read_timeout']
 
@@ -89,14 +90,10 @@ export default {
   name: 'Service',
   data() {
     let validPort = (rule, value, callback) => {
-      return 'undefined' === typeof value || '' == value || /^[0-9]*$/.test(value)
-        ? callback()
-        : callback(new Error('端口号不能包含除数字以为的其他字符'))
+      return validNumber(value, callback)
     }
     let validReadTimeout = (rule, value, callback) => {
-      return 'undefined' === typeof value || '' == value || /^\d+(ns|us|µs|ms|s|m|h)$/.test(value)
-        ? callback()
-        : callback(new Error('必须以ns、us或µs、ms、s、m、h时间单位结尾，例如300ms'))
+      return validTimeDuration(value, callback)
     }
     return {
       config: this.$ls.get('config'),
