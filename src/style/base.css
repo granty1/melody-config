@@ -51,3 +51,7 @@ code {
 .pointer {
   cursor: pointer;
 }
+
+.fs12 {
+  font-size: 12px;
+}
