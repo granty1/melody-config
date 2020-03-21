@@ -46,7 +46,7 @@ const mutations = {
     })
   },
   /**
-   * 根据ame去移除或添加
+   * 根据name去移除或添加
    * @param {*} state
    * @param {*} name 更改状态的card name
    */

@@ -27,6 +27,9 @@ export default {
 
     let loggingConfig = this.$ls.get('logging') === null ? {} : this.$ls.get('logging')
     this.$store.dispatch('updateBaseLogger', { logging: loggingConfig, add: true })
+
+    let addressList = this.$ls.get('addressList') === null ? [] : this.$ls.get('addressList')
+    this.$store.commit('setAddressList', addressList)
   },
 }
 </script>

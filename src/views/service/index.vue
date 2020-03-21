@@ -42,14 +42,26 @@
                 </el-radio-group>
                 <el-input
                   style="margin-top: 10px"
-                  v-model="config.address"
-                  @input="save"
+                  v-model="curAddress"
                   placeholder="address"
+                  @change="saveAddress"
                 >
                   <template slot="prepend">
                     <el-checkbox v-model="disableSanitize">disable sanitize</el-checkbox>
                   </template>
                 </el-input>
+                <div>
+                  <el-tag
+                    v-for="(address, index) in addressList"
+                    :key="index"
+                    closable
+                    type="success"
+                    style="display: block;margin: 10px 0;line-height: 30px;"
+                    @close="handleTagClose(address)"
+                  >
+                    {{ address }}
+                  </el-tag>
+                </div>
                 <div class="fs12">
                   Melody连接到的地址。一些有效的示例:
                   <code>https://myapi</code>，<code>amqp://host</code>，
@@ -122,6 +134,7 @@ let needCheckProps = ['name', 'port', 'read_timeout', 'timeout']
 
 export default {
   name: 'Service',
+  mounted() {},
   data() {
     let validPort = (rule, value, callback) => {
       return validNumber(value, callback)
@@ -139,6 +152,8 @@ export default {
       sdType: 'Static address resolution',
       etcdDisabled: true,
       disableSanitize: false,
+      addressList: this.$store.getters.addressList,
+      curAddress: '',
     }
   },
   components: {
@@ -153,8 +168,22 @@ export default {
       this.$store.commit('updateServiceConfig', this.config)
       this.$store.commit('removeUselessPropsAtServiceConfigLevel', needCheckProps)
     },
+    saveAddress(value) {
+      if (this.addressList.indexOf(this.sdType.split(' ')[0] + ' - ' + value) == -1) {
+        this.addressList.push(this.sdType.split(' ')[0] + ' - ' + value)
+        this.$store.commit('setAddressList', this.addressList)
+        this.curAddress = ''
+      } else {
+        this.$message({
+          message: '请勿重复添加',
+        })
+      }
+    },
+    handleTagClose(value) {
+      this.addressList.splice(this.addressList.indexOf(value), 1)
+      this.$store.commit('setAddressList', this.addressList)
+    },
   },
-  mounted() {},
   beforeRouteLeave(to, from, next) {
     this.$refs.config.validate(valid => {
       if (valid) {
