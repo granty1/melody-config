@@ -28,6 +28,11 @@ const routes = [
             component: () => import('../views/sd'),
           },
           {
+            path: '/safe',
+            name: 'safe',
+            component: () => import('../views/safe/response'),
+          },
+          {
             path: '/endpoints/:url',
             name: 'endpoints',
             component: () => import('../views/endpoints'),

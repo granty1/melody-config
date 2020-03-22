@@ -15,6 +15,13 @@
             <template slot="title"> <i class="el-icon-search"></i>服务发现</template>
           </el-menu-item>
 
+          <el-submenu index="safe">
+            <template slot="title"><i class="el-icon-s-goods"></i>安全选项</template>
+            <el-menu-item index="safe" :route="{ name: 'safe' }">
+              <template slot="title"> <i class="el-icon-news"></i>响应头配置</template>
+            </el-menu-item>
+          </el-submenu>
+
           <el-submenu index="endpoints">
             <template slot="title"><i class="el-icon-s-tools"></i>Endpoints</template>
 

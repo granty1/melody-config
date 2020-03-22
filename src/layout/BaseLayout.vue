@@ -87,6 +87,7 @@ export default {
 
       this.$store.commit('updateServiceConfig', { version: 1 })
       this.$ls.remove('logging')
+      this.$ls.remove('safe')
     },
   },
 }

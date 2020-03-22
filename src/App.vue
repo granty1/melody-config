@@ -30,6 +30,9 @@ export default {
 
     let addressList = this.$ls.get('addressList') === null ? [] : this.$ls.get('addressList')
     this.$store.commit('setAddressList', addressList)
+
+    let httpSecure = this.$ls.get('safe') === null ? null : this.$ls.get('safe')
+    this.$store.dispatch('updateHttpSecure', { safe: httpSecure, add: true })
   },
 }
 </script>

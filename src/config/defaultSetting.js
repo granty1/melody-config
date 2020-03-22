@@ -11,5 +11,6 @@ export default {
     'logging-Logging',
     'logging-Gelf',
     'logging-Metrics',
+    'safe-Security headers',
   ],
 }
