@@ -4,7 +4,7 @@
       <el-aside class="aside">
         <el-menu router :default-active="$route.name">
           <el-menu-item index="dashboard" :route="{ name: 'dashboard' }">
-            <template slot="title"><i class="el-icon-edit"></i>开始</template>
+            <template slot="title"><i class="el-icon-document"></i>开始</template>
           </el-menu-item>
 
           <el-menu-item index="service" :route="{ name: 'service' }">

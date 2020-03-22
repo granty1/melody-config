@@ -364,7 +364,7 @@ export default {
       if (enable) {
         this.updateHttpSecure()
       } else {
-        this.$store.dispatch('updateHttpSecure', { safe: null, add: 'remove' })
+        this.$store.dispatch('updateHttpSecure', { safe: null, add: false })
       }
     },
     addHostHandle() {

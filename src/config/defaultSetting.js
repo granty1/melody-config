@@ -8,6 +8,7 @@ export default {
   defaultActiveCards: [
     'service-Service Name',
     'service-HTTP Server settings',
+    'service-Available hosts',
     'logging-Logging',
     'logging-Gelf',
     'logging-Metrics',
