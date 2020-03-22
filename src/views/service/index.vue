@@ -55,8 +55,8 @@
                     v-for="(address, index) in addressList"
                     :key="index"
                     closable
-                    type="success"
-                    style="display: block;margin: 10px 0;line-height: 30px;"
+                    type="info"
+                    :style="index == 0 ? {} : { 'margin-left': '10px' }"
                     @close="handleTagClose(address)"
                   >
                     {{ address }}
