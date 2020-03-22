@@ -74,13 +74,13 @@ const mutations = {
   },
   addOrRemoveExtraConfig(state, config) {
     let serviceConfig = state.serviceConfig
-    let obj = {}
-    obj[config.key] = config.value
     switch (config.operation) {
       case 'add':
         if (serviceConfig['extra_config'] != undefined) {
           serviceConfig['extra_config'][config.key] = config.value
         } else {
+          let obj = {}
+          obj[config.key] = config.value
           serviceConfig['extra_config'] = obj
         }
         break

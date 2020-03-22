@@ -15,8 +15,11 @@ export default {
       iconClass: 'el-icon-check',
       duration: 3000,
     })
+
     let config = this.$ls.get('config') === null ? {} : this.$ls.get('config')
     config.version = 1
+    config.output_encoding = config.output_encoding == undefined ? 'json' : config.output_encoding
+    config.disable_rest = config.disable_rest == undefined ? false : config.disable_rest
     this.$store.commit('updateServiceConfig', config)
 
     let activeCards =

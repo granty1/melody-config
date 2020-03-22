@@ -77,10 +77,20 @@
               <div class="sf12">
                 除非在每个endpoint中明确覆盖，否则以下所有设置将在所有backend中使用
               </div>
+              <!-- Backend Timeout -->
               <el-form-item label="Backend Timeout" prop="timeout">
                 <el-input v-model="config.timeout" @input="save" placeholder="3000ms"></el-input>
                 <div class="fs12">
-                  友好的名称，标题，日期，版本或任何其他简短描述，可帮助您在打开时识别JSON文件。
+                  与您的后端的所有连接的默认timeout，包括在整个管道中花费的时间。
+                  以后可以在特定endpoint上覆盖此值。
+                </div>
+              </el-form-item>
+              <!-- Default Cache TTL -->
+              <el-form-item label="Default Cache TTL" prop="cache_ttl">
+                <el-input v-model="config.cache_ttl" @input="save" placeholder="300s"></el-input>
+                <div class="fs12">
+                  仅适用于GET请求。该服务不会缓存任何内容，但会加快代理的headers进行缓存 (e.g., a
+                  Varnish server)。
                 </div>
               </el-form-item>
             </melody-card-item>
@@ -105,17 +115,121 @@
                   也可以在启动时使用标志<code>-p</code>指定该端口。
                 </div>
               </el-form-item>
-              <!-- HTTP Read Timeout -->
-              <el-form-item label="HTTP Read Timeout" prop="read_timeout">
-                <el-input
-                  @input="save"
-                  v-model="config.read_timeout"
-                  placeholder="0s"
-                  autocomplete="off"
-                ></el-input>
-                <div class="fs12">
-                  读取整个HTTP请求（包括正文）的最大持续时间。
-                </div>
+              <!-- Enable HTTPS -->
+              <el-form-item label="Enable HTTPS">
+                <el-switch @change="changeEnableHTTPS" v-model="enableHTTPS"></el-switch>
+              </el-form-item>
+              <template v-if="enableHTTPS">
+                <el-row type="flex" class="row-bg" justify="space-around">
+                  <el-col :span="11" class="container">
+                    <!-- Public key -->
+                    <el-form-item label="Public key">
+                      <el-input
+                        @input="save"
+                        v-model="config.tls.public_key"
+                        placeholder="/path/to/cert.pem"
+                        autocomplete="off"
+                      ></el-input>
+                      <div class="fs12">
+                        公钥的绝对路径或相对于当前工作目录的相对路径
+                      </div>
+                    </el-form-item>
+                  </el-col>
+
+                  <el-col :span="11" class="container">
+                    <!-- Private key -->
+                    <el-form-item label="Private key">
+                      <el-input
+                        @input="save"
+                        v-model="config.tls.private_key"
+                        placeholder="/path/to/key.pem"
+                        autocomplete="off"
+                      ></el-input>
+                      <div class="fs12">
+                        私钥的绝对路径或相对于当前工作目录的相对路径
+                      </div>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </template>
+              <el-row type="flex" class="row-bg" justify="space-around">
+                <el-col :span="11" class="container">
+                  <!-- HTTP Read Timeout -->
+                  <el-form-item label="HTTP Read Timeout" prop="read_timeout">
+                    <el-input
+                      @input="save"
+                      v-model="config.read_timeout"
+                      placeholder="0s"
+                      autocomplete="off"
+                    ></el-input>
+                    <div class="fs12">
+                      读取整个HTTP请求（包括正文）的最大持续时间。
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="11" class="container">
+                  <!-- HTTP Write Timeout -->
+                  <el-form-item label="HTTP Write Timeout" prop="write_timeout">
+                    <el-input
+                      @input="save"
+                      v-model="config.write_timeout"
+                      placeholder="0s"
+                      autocomplete="off"
+                    ></el-input>
+                    <div class="fs12">
+                      超时写入响应之前的最大持续时间
+                    </div>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row type="flex" class="row-bg" justify="space-around">
+                <el-col :span="11" class="container">
+                  <!-- HTTP Read Header Timeout -->
+                  <el-form-item label="HTTP Read Header Timeout" prop="read_header_timeout">
+                    <el-input
+                      @input="save"
+                      v-model="config.read_header_timeout"
+                      placeholder="0s"
+                      autocomplete="off"
+                    ></el-input>
+                    <div class="fs12">
+                      读取header花费的最长时间
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="11" class="container">
+                  <!-- HTTP Idle Timeout -->
+                  <el-form-item label="HTTP Idle Timeout" prop="idle_timeout">
+                    <el-input
+                      @input="save"
+                      v-model="config.idle_timeout"
+                      placeholder="0s"
+                      autocomplete="off"
+                    ></el-input>
+                    <div class="fs12">
+                      启用Keepalive时等待下一个请求的最长时间
+                    </div>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </melody-card-item>
+            <!-- Options -->
+            <melody-card-item title="Options">
+              <!-- Output encoding -->
+              <el-form-item label="Output encoding">
+                <el-select v-model="config.output_encoding" @change="save">
+                  <el-option
+                    v-for="item in output_encoding"
+                    :key="item"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <!-- Allow non-RESTful resource naming -->
+              <el-form-item label="Allow non-RESTful resource naming">
+                <el-switch @change="save" v-model="config.disable_rest"></el-switch>
               </el-form-item>
             </melody-card-item>
           </melody-card>
@@ -130,7 +244,16 @@ import MelodyCard from '@/components/MelodyCard'
 import MelodyCardItem from '@/components/MelodyCardItem'
 import { validTimeDuration, validNumber } from '@/utils/regxp'
 
-let needCheckProps = ['name', 'port', 'read_timeout', 'timeout']
+let needCheckProps = [
+  'name',
+  'port',
+  'read_timeout',
+  'timeout',
+  'cache_ttl',
+  'write_timeout',
+  'idle_timeout',
+  'read_header_timeout',
+]
 
 export default {
   name: 'Service',
@@ -143,17 +266,27 @@ export default {
       return validTimeDuration(value, callback)
     }
     return {
-      config: this.$ls.get('config'),
+      config: this.$store.getters.serviceConfig,
       serviceConfigRules: {
         port: [{ validator: validPort, trigger: 'blur' }],
         read_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
         timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
+        cache_ttl: [{ validator: validReadTimeout, trigger: 'blur' }],
+        write_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
+        idle_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
+        read_header_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
       },
       sdType: 'Static address resolution',
       etcdDisabled: true,
       disableSanitize: false,
       addressList: this.$store.getters.addressList,
       curAddress: '',
+      enableHTTPS: this.$ls.get('config')['tls'] !== undefined,
+      output_encoding: [
+        { value: 'json', label: 'JSON' },
+        { value: 'string', label: 'String(text/plain)' },
+        { value: 'no-op', label: 'No-op(just proxy)' },
+      ],
     }
   },
   components: {
@@ -182,6 +315,17 @@ export default {
     handleTagClose(value) {
       this.addressList.splice(this.addressList.indexOf(value), 1)
       this.$store.commit('setAddressList', this.addressList)
+    },
+    changeEnableHTTPS(enable) {
+      if (enable) {
+        this.config['tls'] = {
+          public_key: '',
+          private_key: '',
+        }
+      } else {
+        delete this.config['tls']
+      }
+      this.$store.commit('updateServiceConfig', this.config)
     },
   },
   beforeRouteLeave(to, from, next) {
