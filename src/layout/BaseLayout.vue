@@ -5,23 +5,17 @@
       <el-row>
         <!-- header logo -->
         <el-col :span="5">
-          <router-link :to="{ name: 'dashboard' }">
-            <img class="navbar-logo" src="../assets/img/melodylogo.png" alt="" />
-            <span>Melody Configer</span>
-          </router-link>
+          <!-- <router-link :to="{ name: 'dashboard' }"> -->
+          <img @click="setCollapse" class="navbar-logo" src="../assets/img/melodylogo.png" alt />
+          <span class="myhidden">Melody Configer</span>
+          <!-- </router-link> -->
         </el-col>
         <!-- header mid -->
         <el-col class="navbar-list" :span="14">
           <div>
-            <span @click="goto('https://granty1.github.io/melody-web/')">
-              特性
-            </span>
-            <span @click="goto('https://github.com/granty1/melody/releases/tag/v1.0.0')">
-              下载
-            </span>
-            <span @click="goto('https://granty1.github.io/melody-docs/')">
-              功能文档
-            </span>
+            <span @click="goto('https://granty1.github.io/melody-web/')">特性</span>
+            <span @click="goto('https://github.com/granty1/melody/releases/tag/v1.0.0')">下载</span>
+            <span @click="goto('https://granty1.github.io/melody-docs/')">功能文档</span>
           </div>
         </el-col>
         <!-- header right -->
@@ -32,8 +26,9 @@
             type="text"
             icon="el-icon-download"
             size="small"
-            >保存配置</el-button
           >
+            <span>保存配置</span>
+          </el-button>
 
           <el-button
             @click="clearCache"
@@ -41,8 +36,9 @@
             type="text"
             icon="el-icon-refresh"
             size="small"
-            >清除缓存</el-button
           >
+            <span>清除缓存</span>
+          </el-button>
         </el-col>
       </el-row>
     </header>
@@ -58,6 +54,11 @@ import FileSaver from 'file-saver'
 import { Loading } from 'element-ui'
 export default {
   name: 'BaseLayout',
+  data() {
+    return {
+      isCollapse: this.$store.getters.isCollapse,
+    }
+  },
   methods: {
     goto(url) {
       window.location.href = url
@@ -89,6 +90,10 @@ export default {
       this.$ls.remove('logging')
       this.$ls.remove('safe')
     },
+    setCollapse() {
+      this.$store.commit('setIsCollapse', !this.isCollapse)
+      this.isCollapse = this.$store.getters.isCollapse
+    },
   },
 }
 </script>
@@ -108,6 +113,7 @@ export default {
   min-width: 2.2rem;
   margin-right: 0.8rem;
   vertical-align: top;
+  cursor: pointer;
 }
 
 a span {
@@ -139,5 +145,26 @@ a span {
   color: #2c3e50;
   font-weight: 200;
   margin-left: 1rem;
+}
+
+@media screen and (orientation: portrait) {
+  .myhidden {
+    display: none;
+  }
+
+  .navbar-list span {
+    font-size: 0.8rem;
+  }
+
+  .save_button {
+    color: #000;
+    margin-left: 0.3rem;
+    font-size: 20px;
+    vertical-align: middle;
+  }
+
+  .save_button span {
+    display: none;
+  }
 }
 </style>

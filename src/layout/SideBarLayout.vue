@@ -1,29 +1,36 @@
 <template>
   <div>
     <el-container>
-      <el-aside class="aside">
-        <el-menu router :default-active="$route.name">
+      <el-aside v-bind:class="{ myhidden: isCollapse }">
+        <!-- <span class="myspan"><i class="el-icon-menu"></i></span> -->
+        <el-menu router :default-active="$route.name" :collapse="myCollapse">
           <el-menu-item index="dashboard" :route="{ name: 'dashboard' }">
-            <template slot="title"><i class="el-icon-document"></i>开始</template>
+            <i class="el-icon-document"></i><span slot="title">开始</span>
           </el-menu-item>
 
           <el-menu-item index="service" :route="{ name: 'service' }">
-            <template slot="title"><i class="el-icon-setting"></i>Service</template>
+            <i class="el-icon-setting"></i><span slot="title">Service</span>
           </el-menu-item>
 
           <el-menu-item index="sd" :route="{ name: 'sd' }">
-            <template slot="title"> <i class="el-icon-search"></i>服务发现</template>
+            <i class="el-icon-search"></i><span slot="title">服务发现</span>
           </el-menu-item>
 
           <el-submenu index="safe">
-            <template slot="title"><i class="el-icon-s-goods"></i>安全选项</template>
+            <template slot="title"
+              ><i class="el-icon-s-goods"></i><span slot="title">安全选项</span></template
+            >
             <el-menu-item index="safe" :route="{ name: 'safe' }">
-              <template slot="title"> <i class="el-icon-news"></i>响应头配置</template>
+              <template slot="title">
+                <i class="el-icon-news"></i><span slot="title">响应头配置</span></template
+              >
             </el-menu-item>
           </el-submenu>
 
           <el-submenu index="endpoints">
-            <template slot="title"><i class="el-icon-s-tools"></i>Endpoints</template>
+            <template slot="title"
+              ><i class="el-icon-s-tools"></i><span slot="title">Endpoints</span></template
+            >
 
             <el-menu-item-group>
               <span class="title pointer" @click="addEndpoint">添加endpoint</span>
@@ -46,11 +53,12 @@
           </el-submenu>
 
           <el-menu-item index="logging" :route="{ name: 'logging' }">
-            <template slot="title"><i class="el-icon-odometer"></i>日志与监控</template>
+            <!-- <template slot="title"><i class="el-icon-odometer"></i><span slot="title">日志与监控</span></template> -->
+            <i class="el-icon-odometer"></i><span slot="title">日志与监控</span>
           </el-menu-item>
 
           <el-menu-item index="import" :route="{ name: 'import' }">
-            <template slot="title"><i class="el-icon-upload"></i>配置生成</template>
+            <i class="el-icon-upload"></i><span slot="title">配置生成</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -67,6 +75,7 @@ export default {
   data() {
     return {
       endpoints: [],
+      isCollapse: this.$store.getters.isCollapse,
     }
   },
   methods: {
@@ -77,13 +86,35 @@ export default {
       })
     },
   },
+  computed: {
+    myCollapse() {
+      return this.$store.getters.isCollapse
+    },
+  },
+  watch: {
+    myCollapse: function(newVal) {
+      this.isCollapse = newVal
+      // if(newVal === false){
+
+      // }else {
+
+      // }
+    },
+  },
 }
 </script>
 
 <style lang="scss" scoped>
 .aside {
   min-height: 700px;
-  border-right: 1px solid #eaecef;
+  height: 100%;
+}
+
+.myspan {
+  display: block;
+  width: 40px;
+  height: 40px;
+  background-color: aqua;
 }
 
 .title {
@@ -96,5 +127,9 @@ export default {
 
 .pointer {
   cursor: pointer;
+}
+
+.myhidden {
+  display: none;
 }
 </style>
