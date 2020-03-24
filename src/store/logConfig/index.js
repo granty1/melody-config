@@ -106,6 +106,25 @@ const actions = {
       })
     }
   },
+  updateInflux(store, { logging, add }) {
+    this.commit('updateLoggingState', logging)
+    const { commit } = store
+    if (add) {
+      if (logging.metrics != null) {
+        commit('addOrRemoveExtraConfig', {
+          key: 'melody_influxdb',
+          value: logging.influx,
+          operation: 'add',
+        })
+      }
+    } else {
+      commit('addOrRemoveExtraConfig', {
+        key: 'melody_influxdb',
+        value: null,
+        operation: 'remove',
+      })
+    }
+  },
 }
 
 const mutations = {
