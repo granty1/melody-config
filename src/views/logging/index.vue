@@ -392,6 +392,7 @@
                 <template v-if="logging.influx.data_server_enable">
                   <el-form-item label="Melody Data Server Address">
                     <el-input
+                      @input="updateInflux"
                       placeholder="melody data server address"
                       v-model="logging.influx.data_server_port"
                     ></el-input>
