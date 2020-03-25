@@ -138,6 +138,30 @@
                   >
                     {{ origin }}
                   </el-tag>
+                  <div class="fs12">
+                    Add those origins you would like to accept. Or use * for any origin.
+                  </div>
+                </el-form-item>
+                <!-- Allowed headers -->
+                <el-form-item label="Allowed headers">
+                  <el-input
+                    v-model="curHeader"
+                    placeholder="https://example.com"
+                    @change="saveHeader"
+                  ></el-input>
+                  <el-tag
+                    v-for="(header, index) in melody_cors.expose_headers"
+                    :key="index"
+                    closable
+                    type="info"
+                    :style="index == 0 ? {} : { 'margin-left': '10px' }"
+                    @close="handleAllowedHeadersTagClose(header)"
+                  >
+                    {{ header }}
+                  </el-tag>
+                  <div class="fs12">
+                    Only the headers added here will be allowed
+                  </div>
                 </el-form-item>
               </template>
             </melody-card-item>
@@ -330,6 +354,7 @@ export default {
       openEnableHTTPS: serviceConfig.tls !== undefined,
       openCORS: serviceConfig.extra_config.melody_cors !== undefined,
       curOrigin: '',
+      curHeader: '',
 
       tls:
         serviceConfig.tls == undefined
@@ -383,7 +408,20 @@ export default {
           message: '请勿重复添加',
         })
       }
-      this.$store.commit('setExtraConfig', this.availableHosts)
+      this.$store.commit('setExtraConfig', { name: 'melody_cors', config: this.melody_cors })
+    },
+    saveHeader(value) {
+      let headers = this.melody_cors.expose_headers
+      if (headers.indexOf(value) == -1) {
+        headers.push(value)
+        this.melody_cors.expose_headers = headers
+        this.curHeader = ''
+      } else {
+        this.$message({
+          message: '请勿重复添加',
+        })
+      }
+      this.$store.commit('setExtraConfig', { name: 'melody_cors', config: this.melody_cors })
     },
     handleAvailableHostsTagClose(value) {
       this.availableHosts.splice(this.availableHosts.indexOf(value), 1)
@@ -391,6 +429,10 @@ export default {
     },
     handleAllowedOriginsTagClose(value) {
       this.melody_cors.allow_origins.splice(this.melody_cors.allow_origins.indexOf(value), 1)
+      this.$store.commit('setExtraConfig', { name: 'melody_cors', config: this.melody_cors })
+    },
+    handleAllowedHeadersTagClose(value) {
+      this.melody_cors.expose_headers.splice(this.melody_cors.expose_headers.indexOf(value), 1)
       this.$store.commit('setExtraConfig', { name: 'melody_cors', config: this.melody_cors })
     },
     swtichEnableHTTPS(enable) {
