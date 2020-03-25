@@ -220,7 +220,7 @@
                 <el-select v-model="config.output_encoding" @change="save">
                   <el-option
                     v-for="item in output_encoding"
-                    :key="item"
+                    :key="item.value"
                     :label="item.label"
                     :value="item.value"
                   >
