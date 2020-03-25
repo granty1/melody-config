@@ -31,8 +31,9 @@ export default {
     let loggingConfig = this.$ls.get('logging') === null ? {} : this.$ls.get('logging')
     this.$store.dispatch('updateBaseLogger', { logging: loggingConfig, add: true })
 
-    let addressList = this.$ls.get('addressList') === null ? [] : this.$ls.get('addressList')
-    this.$store.commit('setAddressList', addressList)
+    let availableHosts =
+      this.$ls.get('availableHosts') === null ? [] : this.$ls.get('availableHosts')
+    this.$store.commit('setAvailableHosts', availableHosts)
 
     let httpSecure = this.$ls.get('safe') === null ? null : this.$ls.get('safe')
     this.$store.dispatch('updateHttpSecure', { safe: httpSecure, add: true })

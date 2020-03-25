@@ -2,7 +2,7 @@ import Vue from 'vue'
 
 const state = {
   serviceConfig: {
-    extra_config: [],
+    extra_config: {},
   },
   activeCards: [],
 }
@@ -80,7 +80,7 @@ const mutations = {
       Vue.ls.set('active_cards', actives)
     }
   },
-  addExtraConfig(state, { name, config }) {
+  setExtraConfig(state, { name, config }) {
     state.serviceConfig.extra_config[name] = config
     Vue.ls.set('config', state.serviceConfig)
   },

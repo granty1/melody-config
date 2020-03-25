@@ -26,7 +26,7 @@
                 <div class="fs12">
                   在此处添加Melody用于检索数据的所有地址，以及是否由服务发现解决的地址：
                 </div>
-                <el-radio-group v-model="sdType" size="small">
+                <el-radio-group v-model="curSDType" size="small">
                   <el-radio-button label="Static address resolution">
                     Static address resolution
                   </el-radio-button>
@@ -42,9 +42,9 @@
                 </el-radio-group>
                 <el-input
                   style="margin-top: 10px"
-                  v-model="curAddress"
+                  v-model="curAvailableHost"
                   placeholder="address"
-                  @change="saveAddress"
+                  @change="saveAvailableHosts"
                 >
                   <template slot="prepend">
                     <el-checkbox v-model="disableSanitize">disable sanitize</el-checkbox>
@@ -52,14 +52,14 @@
                 </el-input>
                 <div>
                   <el-tag
-                    v-for="(address, index) in addressList"
+                    v-for="(ah, index) in availableHosts"
                     :key="index"
                     closable
                     type="info"
                     :style="index == 0 ? {} : { 'margin-left': '10px' }"
-                    @close="handleTagClose(address)"
+                    @close="handleAvailableHostsTagClose(ah)"
                   >
-                    {{ address }}
+                    {{ ah }}
                   </el-tag>
                 </div>
                 <div class="fs12">
@@ -103,6 +103,7 @@
                 <el-switch v-model="openCORS" @change="swtichCORS"></el-switch>
               </el-form-item>
               <template v-if="openCORS">
+                <!-- Allowed methods -->
                 <el-form-item label="Allowed methods">
                   <el-checkbox-group
                     v-model="melody_cors.allow_methods"
@@ -119,6 +120,24 @@
                     <el-checkbox label="TRACE" border></el-checkbox>
                     <el-checkbox label="PATCH" border></el-checkbox>
                   </el-checkbox-group>
+                </el-form-item>
+                <!-- Allowed origins -->
+                <el-form-item label="Allowed origins">
+                  <el-input
+                    v-model="curOrigin"
+                    placeholder="https://example.com"
+                    @change="saveOrigin"
+                  ></el-input>
+                  <el-tag
+                    v-for="(origin, index) in melody_cors.allow_origins"
+                    :key="index"
+                    closable
+                    type="info"
+                    :style="index == 0 ? {} : { 'margin-left': '10px' }"
+                    @close="handleAllowedOriginsTagClose(origin)"
+                  >
+                    {{ origin }}
+                  </el-tag>
                 </el-form-item>
               </template>
             </melody-card-item>
@@ -295,17 +314,23 @@ export default {
         idle_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
         read_header_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
       },
-      sdType: 'Static address resolution',
+
       etcdDisabled: true,
       disableSanitize: false,
-      addressList: this.$store.getters.addressList,
-      curAddress: '',
+      curSDType: 'Static address resolution',
+      curAvailableHost: '',
+      availableHosts: this.$store.getters.availableHosts,
+
       output_encoding: [
         { value: 'json', label: 'JSON' },
         { value: 'string', label: 'String(text/plain)' },
         { value: 'no-op', label: 'No-op(just proxy)' },
       ],
+
       openEnableHTTPS: serviceConfig.tls !== undefined,
+      openCORS: serviceConfig.extra_config.melody_cors !== undefined,
+      curOrigin: '',
+
       tls:
         serviceConfig.tls == undefined
           ? {
@@ -313,7 +338,6 @@ export default {
               private_key: '',
             }
           : serviceConfig.tls,
-      openCORS: serviceConfig.extra_config.melody_cors !== undefined,
       melody_cors:
         serviceConfig.extra_config.melody_cors == undefined
           ? {
@@ -337,20 +361,37 @@ export default {
       this.$store.commit('updateServiceConfig', this.config)
       this.$store.commit('removeUselessPropsAtServiceConfigLevel')
     },
-    saveAddress(value) {
-      if (this.addressList.indexOf(this.sdType.split(' ')[0] + ' - ' + value) == -1) {
-        this.addressList.push(this.sdType.split(' ')[0] + ' - ' + value)
-        this.$store.commit('setAddressList', this.addressList)
-        this.curAddress = ''
+    saveAvailableHosts(value) {
+      if (this.availableHosts.indexOf(this.curSDType.split(' ')[0] + ' - ' + value) == -1) {
+        this.availableHosts.push(this.curSDType.split(' ')[0] + ' - ' + value)
+        this.$store.commit('setAvailableHosts', this.availableHosts)
+        this.curAvailableHost = ''
       } else {
         this.$message({
           message: '请勿重复添加',
         })
       }
     },
-    handleTagClose(value) {
-      this.addressList.splice(this.addressList.indexOf(value), 1)
-      this.$store.commit('setAddressList', this.addressList)
+    saveOrigin(value) {
+      let origins = this.melody_cors.allow_origins
+      if (origins.indexOf(value) == -1) {
+        origins.push(value)
+        this.melody_cors.allow_origins = origins
+        this.curOrigin = ''
+      } else {
+        this.$message({
+          message: '请勿重复添加',
+        })
+      }
+      this.$store.commit('setExtraConfig', this.availableHosts)
+    },
+    handleAvailableHostsTagClose(value) {
+      this.availableHosts.splice(this.availableHosts.indexOf(value), 1)
+      this.$store.commit('setAvailableHosts', this.availableHosts)
+    },
+    handleAllowedOriginsTagClose(value) {
+      this.melody_cors.allow_origins.splice(this.melody_cors.allow_origins.indexOf(value), 1)
+      this.$store.commit('setExtraConfig', { name: 'melody_cors', config: this.melody_cors })
     },
     swtichEnableHTTPS(enable) {
       if (enable) {
@@ -362,13 +403,13 @@ export default {
     },
     swtichCORS(enable) {
       if (enable) {
-        this.$store.commit('addExtraConfig', { name: 'melody_cors', config: this.melody_cors })
+        this.$store.commit('setExtraConfig', { name: 'melody_cors', config: this.melody_cors })
       } else {
         this.$store.commit('removeExtraConfig', { name: 'melody_cors' })
       }
     },
     changeCORS() {
-      this.$store.commit('addExtraConfig', { name: 'melody_cors', config: this.melody_cors })
+      this.$store.commit('setExtraConfig', { name: 'melody_cors', config: this.melody_cors })
     },
   },
   beforeRouteLeave(to, from, next) {
