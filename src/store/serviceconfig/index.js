@@ -84,7 +84,7 @@ const mutations = {
     state.serviceConfig.extra_config[name] = config
     Vue.ls.set('config', state.serviceConfig)
   },
-  removeExtraConfig(state, name) {
+  removeExtraConfig(state, { name }) {
     delete state.serviceConfig.extra_config[name]
     Vue.ls.set('config', state.serviceConfig)
   },

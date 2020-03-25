@@ -100,14 +100,14 @@
             <!-- Cross-origin resource sharing (CORS) -->
             <melody-card-item title="Cross-origin resource sharing (CORS)">
               <el-form-item>
-                <el-switch v-model="showCORS"></el-switch>
+                <el-switch v-model="openCORS" @change="swtichCORS"></el-switch>
               </el-form-item>
-              <template v-if="showCORS">
+              <template v-if="openCORS">
                 <el-form-item label="Allowed methods">
                   <el-checkbox-group
                     v-model="melody_cors.allow_methods"
                     size="small"
-                    @change="CORSChange"
+                    @change="changeCORS"
                   >
                     <el-checkbox label="GET" border></el-checkbox>
                     <el-checkbox label="POST" border></el-checkbox>
@@ -145,9 +145,9 @@
               </el-form-item>
               <!-- Enable HTTPS -->
               <el-form-item label="Enable HTTPS">
-                <el-switch @change="changeEnableHTTPS" v-model="enableHTTPS"></el-switch>
+                <el-switch @change="swtichEnableHTTPS" v-model="openEnableHTTPS"></el-switch>
               </el-form-item>
-              <template v-if="enableHTTPS">
+              <template v-if="openEnableHTTPS">
                 <el-row type="flex" class="row-bg" justify="space-around">
                   <el-col :span="11" class="container">
                     <!-- Public key -->
@@ -300,13 +300,20 @@ export default {
       disableSanitize: false,
       addressList: this.$store.getters.addressList,
       curAddress: '',
-      enableHTTPS: serviceConfig.tls !== undefined,
       output_encoding: [
         { value: 'json', label: 'JSON' },
         { value: 'string', label: 'String(text/plain)' },
         { value: 'no-op', label: 'No-op(just proxy)' },
       ],
-      showCORS: serviceConfig.extra_config.melody_cors !== undefined,
+      openEnableHTTPS: serviceConfig.tls !== undefined,
+      tls:
+        serviceConfig.tls == undefined
+          ? {
+              public_key: '',
+              private_key: '',
+            }
+          : serviceConfig.tls,
+      openCORS: serviceConfig.extra_config.melody_cors !== undefined,
       melody_cors:
         serviceConfig.extra_config.melody_cors == undefined
           ? {
@@ -345,18 +352,22 @@ export default {
       this.addressList.splice(this.addressList.indexOf(value), 1)
       this.$store.commit('setAddressList', this.addressList)
     },
-    changeEnableHTTPS(enable) {
+    swtichEnableHTTPS(enable) {
       if (enable) {
-        this.config.tls = {
-          public_key: '',
-          private_key: '',
-        }
+        this.config.tls = this.tls
       } else {
         delete this.config.tls
       }
       this.$store.commit('updateServiceConfig', this.config)
     },
-    CORSChange() {
+    swtichCORS(enable) {
+      if (enable) {
+        this.$store.commit('addExtraConfig', { name: 'melody_cors', config: this.melody_cors })
+      } else {
+        this.$store.commit('removeExtraConfig', { name: 'melody_cors' })
+      }
+    },
+    changeCORS() {
       this.$store.commit('addExtraConfig', { name: 'melody_cors', config: this.melody_cors })
     },
   },
