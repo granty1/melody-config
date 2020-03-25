@@ -292,16 +292,32 @@
                 </div>
               </el-form-item>
               <template v-if="logging.influxDBEnable">
-                <el-form-item label="Address" prop="influx.address">
-                  <el-input
-                    @input="updateInflux"
-                    v-model="logging.influx.address"
-                    placeholder="influx server address"
-                  ></el-input>
-                  <div style="font-size: 12px">
-                    <code>InfluxDB</code>地址及端口号，请注意务必以<code>http://</code>开头
-                  </div>
-                </el-form-item>
+                <el-row type="flex" class="row-bg" justify="space-around">
+                  <el-col :span="11">
+                    <el-form-item label="Address" prop="influx.address">
+                      <el-input
+                        @input="updateInflux"
+                        v-model="logging.influx.address"
+                        placeholder="influx server address"
+                      ></el-input>
+                      <div style="font-size: 12px">
+                        <code>InfluxDB</code>地址及端口号，请注意务必以<code>http://</code>开头
+                      </div>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="11" :offset="3">
+                    <el-form-item label="Database">
+                      <el-input
+                        @input="updateInflux"
+                        v-model="logging.influx.db"
+                        placeholder="database name"
+                      ></el-input>
+                      <div style="font-size: 12px">
+                        指定数据库名，默认使用<code>melody_data</code>
+                      </div>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
                 <el-row type="flex" class="row-bg" justify="space-around">
                   <el-col :span="11">
                     <el-form-item label="Username">
@@ -364,6 +380,41 @@
                     某次发送失败时，会将失败的数据暂存到缓冲区中，设置为<code>0</code>时将不会暂存。
                   </div>
                 </el-form-item>
+                <el-form-item label="Melody Data Server">
+                  <el-switch
+                    @change="updateInflux"
+                    v-model="logging.influx.data_server_enable"
+                  ></el-switch>
+                  <div style="font-size: 12px">
+                    当你需要使用metrics采集到的数据时，你可以通过设置该值为<code>true</code>去开启<code>melody-data</code>，<code>melody-data</code>是一个单独的服务，拥有与influxDB交互的能力。
+                  </div>
+                </el-form-item>
+                <template v-if="logging.influx.data_server_enable">
+                  <el-form-item label="Melody Data Server Address">
+                    <el-input
+                      placeholder="melody data server address"
+                      v-model="logging.influx.data_server_port"
+                    ></el-input>
+                    <div style="font-size: 12px">
+                      <code>melody-data</code>监听的地址，默认使用<code>8080</code>
+                    </div>
+                  </el-form-item>
+                  <el-form-item label="Mehtod Config">
+                    <el-checkbox
+                      @change="updateInflux"
+                      v-model="logging.influx.data_server_query_enable"
+                      label="Enable query"
+                    ></el-checkbox>
+                    <div style="font-size: 12px">
+                      是否开放接口method:<code>POST</code> url:<code>/query </code>
+                      request body:
+                      <code
+                        >"command": "查询语句" ，"database": "数据库名"， "precision":
+                        "精度，默认rfc3339, 可选h, m, s, ms, u or ns"</code
+                      >
+                    </div>
+                  </el-form-item>
+                </template>
               </template>
             </melody-card-item>
           </melody-card>
@@ -440,9 +491,13 @@ export default {
           address: 'http://127.0.0.1:8086',
           username: '',
           password: '',
+          db: '',
           buffer_size: 1024,
           ttl: '5s',
           time_out: '5s',
+          data_server_enable: false,
+          data_server_port: ':8080',
+          data_server_query_enable: true,
         },
         logstashEnable: false,
         baseLoggerEnable: false,
