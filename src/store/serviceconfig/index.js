@@ -1,7 +1,9 @@
 import Vue from 'vue'
 
 const state = {
-  serviceConfig: {},
+  serviceConfig: {
+    extra_config: [],
+  },
   activeCards: [],
 }
 
@@ -36,14 +38,20 @@ const mutations = {
    * @param {*} state
    * @param {*} props 要删除的无用的属性的集合
    */
-  removeUselessPropsAtServiceConfigLevel(state, props) {
-    props.forEach(p => {
-      let config = state.serviceConfig
-      if (p in config && !('undefined' === typeof config[p]) && '' == config[p]) {
-        delete config[p]
-        this.commit('updateServiceConfig', config)
+  removeUselessPropsAtServiceConfigLevel(state) {
+    for (let prop in state.serviceConfig) {
+      if (prop === 'extra_config') {
+        continue
       }
-    })
+      if (
+        state.serviceConfig.prop === '' ||
+        state.serviceConfig.prop === [] ||
+        state.serviceConfig.prop === {}
+      ) {
+        delete state.serviceConfig[prop]
+        Vue.ls.set('config', state.serviceConfig)
+      }
+    }
   },
   /**
    * 根据name去移除或添加
@@ -71,6 +79,14 @@ const mutations = {
       state.activeCards = actives
       Vue.ls.set('active_cards', actives)
     }
+  },
+  addExtraConfig(state, { name, config }) {
+    state.serviceConfig.extra_config[name] = config
+    Vue.ls.set('config', state.serviceConfig)
+  },
+  removeExtraConfig(state, name) {
+    delete state.serviceConfig.extra_config[name]
+    Vue.ls.set('config', state.serviceConfig)
   },
   addOrRemoveExtraConfig(state, config) {
     let serviceConfig = state.serviceConfig

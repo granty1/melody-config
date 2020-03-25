@@ -95,6 +95,34 @@
               </el-form-item>
             </melody-card-item>
           </melody-card>
+
+          <melody-card>
+            <!-- Cross-origin resource sharing (CORS) -->
+            <melody-card-item title="Cross-origin resource sharing (CORS)">
+              <el-form-item>
+                <el-switch v-model="showCORS"></el-switch>
+              </el-form-item>
+              <template v-if="showCORS">
+                <el-form-item label="Allowed methods">
+                  <el-checkbox-group
+                    v-model="melody_cors.allow_methods"
+                    size="small"
+                    @change="CORSChange"
+                  >
+                    <el-checkbox label="GET" border></el-checkbox>
+                    <el-checkbox label="POST" border></el-checkbox>
+                    <el-checkbox label="HEAD" border></el-checkbox>
+                    <el-checkbox label="PUT" border></el-checkbox>
+                    <el-checkbox label="DELETE" border></el-checkbox>
+                    <el-checkbox label="CONNECT" border></el-checkbox>
+                    <el-checkbox label="OPTIONS" border></el-checkbox>
+                    <el-checkbox label="TRACE" border></el-checkbox>
+                    <el-checkbox label="PATCH" border></el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+              </template>
+            </melody-card-item>
+          </melody-card>
         </el-col>
 
         <!-- 右侧 -->
@@ -244,17 +272,6 @@ import MelodyCard from '@/components/MelodyCard'
 import MelodyCardItem from '@/components/MelodyCardItem'
 import { validTimeDuration, validNumber } from '@/utils/regxp'
 
-let needCheckProps = [
-  'name',
-  'port',
-  'read_timeout',
-  'timeout',
-  'cache_ttl',
-  'write_timeout',
-  'idle_timeout',
-  'read_header_timeout',
-]
-
 export default {
   name: 'Service',
   mounted() {},
@@ -265,8 +282,10 @@ export default {
     let validReadTimeout = (rule, value, callback) => {
       return validTimeDuration(value, callback)
     }
+
+    let serviceConfig = this.$store.getters.serviceConfig
     return {
-      config: this.$store.getters.serviceConfig,
+      config: serviceConfig,
       serviceConfigRules: {
         port: [{ validator: validPort, trigger: 'blur' }],
         read_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
@@ -281,12 +300,22 @@ export default {
       disableSanitize: false,
       addressList: this.$store.getters.addressList,
       curAddress: '',
-      enableHTTPS: this.$ls.get('config')['tls'] !== undefined,
+      enableHTTPS: serviceConfig.tls !== undefined,
       output_encoding: [
         { value: 'json', label: 'JSON' },
         { value: 'string', label: 'String(text/plain)' },
         { value: 'no-op', label: 'No-op(just proxy)' },
       ],
+      showCORS: serviceConfig.extra_config.melody_cors !== undefined,
+      melody_cors:
+        serviceConfig.extra_config.melody_cors == undefined
+          ? {
+              allow_origins: ['*'],
+              expose_headers: ['Content-Length'],
+              max_age: '12h',
+              allow_methods: ['GET'],
+            }
+          : serviceConfig.extra_config.melody_cors,
     }
   },
   components: {
@@ -299,7 +328,7 @@ export default {
         console.log(err)
       })
       this.$store.commit('updateServiceConfig', this.config)
-      this.$store.commit('removeUselessPropsAtServiceConfigLevel', needCheckProps)
+      this.$store.commit('removeUselessPropsAtServiceConfigLevel')
     },
     saveAddress(value) {
       if (this.addressList.indexOf(this.sdType.split(' ')[0] + ' - ' + value) == -1) {
@@ -318,14 +347,17 @@ export default {
     },
     changeEnableHTTPS(enable) {
       if (enable) {
-        this.config['tls'] = {
+        this.config.tls = {
           public_key: '',
           private_key: '',
         }
       } else {
-        delete this.config['tls']
+        delete this.config.tls
       }
       this.$store.commit('updateServiceConfig', this.config)
+    },
+    CORSChange() {
+      this.$store.commit('addExtraConfig', { name: 'melody_cors', config: this.melody_cors })
     },
   },
   beforeRouteLeave(to, from, next) {
