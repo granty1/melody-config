@@ -14,7 +14,7 @@
             <!-- Service Name -->
             <melody-card-item title="Service Name">
               <el-form-item label="Name">
-                <el-input v-model="config.name" @input="save" placeholder="My Service"></el-input>
+                <el-input v-model="config.name" placeholder="My Service"></el-input>
                 <div class="fs12">
                   友好的名称，标题，日期，版本或任何其他简短描述，可帮助您在打开时识别JSON文件。
                 </div>
@@ -79,7 +79,7 @@
               </div>
               <!-- Backend Timeout -->
               <el-form-item label="Backend Timeout" prop="timeout">
-                <el-input v-model="config.timeout" @input="save" placeholder="3000ms"></el-input>
+                <el-input v-model="config.timeout" placeholder="3000ms"></el-input>
                 <div class="fs12">
                   与您的后端的所有连接的默认timeout，包括在整个管道中花费的时间。
                   以后可以在特定endpoint上覆盖此值。
@@ -87,7 +87,7 @@
               </el-form-item>
               <!-- Default Cache TTL -->
               <el-form-item label="Default Cache TTL" prop="cache_ttl">
-                <el-input v-model="config.cache_ttl" @input="save" placeholder="300s"></el-input>
+                <el-input v-model="config.cache_ttl" placeholder="300s"></el-input>
                 <div class="fs12">
                   仅适用于GET请求。该服务不会缓存任何内容，但会加快代理的headers进行缓存 (e.g., a
                   Varnish server)。
@@ -105,11 +105,7 @@
               <template v-if="openCORS">
                 <!-- Allowed methods -->
                 <el-form-item label="Allowed methods">
-                  <el-checkbox-group
-                    v-model="melody_cors.allow_methods"
-                    size="small"
-                    @change="changeCORS"
-                  >
+                  <el-checkbox-group v-model="melody_cors.allow_methods" size="small">
                     <el-checkbox label="GET" border></el-checkbox>
                     <el-checkbox label="POST" border></el-checkbox>
                     <el-checkbox label="HEAD" border></el-checkbox>
@@ -139,30 +135,82 @@
                     {{ origin }}
                   </el-tag>
                   <div class="fs12">
-                    Add those origins you would like to accept. Or use * for any origin.
+                    添加您要接受的来源，或将<code>*</code>用作任何来源。
                   </div>
                 </el-form-item>
-                <!-- Allowed headers -->
-                <el-form-item label="Allowed headers">
-                  <el-input
-                    v-model="curHeader"
-                    placeholder="https://example.com"
-                    @change="saveHeader"
-                  ></el-input>
-                  <el-tag
-                    v-for="(header, index) in melody_cors.expose_headers"
-                    :key="index"
-                    closable
-                    type="info"
-                    :style="index == 0 ? {} : { 'margin-left': '10px' }"
-                    @close="handleAllowedHeadersTagClose(header)"
-                  >
-                    {{ header }}
-                  </el-tag>
-                  <div class="fs12">
-                    Only the headers added here will be allowed
-                  </div>
-                </el-form-item>
+                <el-row type="flex" class="row-bg" justify="space-around">
+                  <!-- Allowed headers -->
+                  <el-col :span="11" class="container">
+                    <el-form-item label="Allowed headers">
+                      <el-input
+                        v-model="curAllowHeader"
+                        placeholder="Accept-Language"
+                        @change="saveAllowHeader"
+                      ></el-input>
+                      <el-tag
+                        v-for="(header, index) in melody_cors.allow_headers"
+                        :key="index"
+                        closable
+                        type="info"
+                        :style="index == 0 ? {} : { 'margin-left': '10px' }"
+                        @close="handleAllowedHeadersTagClose(header)"
+                      >
+                        {{ header }}
+                      </el-tag>
+                      <div class="fs12">
+                        仅允许在此处添加的Header
+                      </div>
+                    </el-form-item>
+                  </el-col>
+                  <!-- Expose headers -->
+                  <el-col :span="11" class="container">
+                    <el-form-item label="Expose headers">
+                      <el-input
+                        v-model="curExposeHeader"
+                        placeholder="Accept-Language"
+                        @change="saveExposeHeader"
+                      ></el-input>
+                      <el-tag
+                        v-for="(header, index) in melody_cors.expose_headers"
+                        :key="index"
+                        closable
+                        type="info"
+                        :style="index == 0 ? {} : { 'margin-left': '10px' }"
+                        @close="handleExposeHeadersTagClose(header)"
+                      >
+                        {{ header }}
+                      </el-tag>
+                      <div class="fs12">
+                        可安全显示给CORS API规范的API的Header
+                      </div>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+
+                <el-row type="flex" class="row-bg" justify="space-around">
+                  <!-- Allow credentials -->
+                  <el-col :span="11" class="container">
+                    <el-form-item label="Allow credentials">
+                      <el-switch v-model="melody_cors.allow_credentials"></el-switch>
+                      <div class="fs12">
+                        请求可以包含Cookie，HTTP身份验证或客户端SSL证书等用户凭据
+                      </div>
+                    </el-form-item>
+                  </el-col>
+                  <!-- Max age -->
+                  <el-col :span="11" class="container">
+                    <el-form-item label="Max age" prop="max_age">
+                      <el-input
+                        v-model="melody_cors.max_age"
+                        placeholder="12h"
+                        @input="changeMaxAge"
+                      ></el-input>
+                      <div class="fs12">
+                        响应可以缓存多长时间
+                      </div>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
               </template>
             </melody-card-item>
           </melody-card>
@@ -175,12 +223,7 @@
             <melody-card-item title="HTTP Server settings">
               <!-- Port -->
               <el-form-item label="Port" prop="port">
-                <el-input
-                  @input="save"
-                  v-model="config.port"
-                  placeholder="8080"
-                  autocomplete="off"
-                ></el-input>
+                <el-input v-model="config.port" placeholder="8080" autocomplete="off"></el-input>
                 <div class="fs12">
                   Melody用来监听连接的端口，默认为<code>8080</code>。
                   也可以在启动时使用标志<code>-p</code>指定该端口。
@@ -196,7 +239,6 @@
                     <!-- Public key -->
                     <el-form-item label="Public key">
                       <el-input
-                        @input="save"
                         v-model="config.tls.public_key"
                         placeholder="/path/to/cert.pem"
                         autocomplete="off"
@@ -211,7 +253,6 @@
                     <!-- Private key -->
                     <el-form-item label="Private key">
                       <el-input
-                        @input="save"
                         v-model="config.tls.private_key"
                         placeholder="/path/to/key.pem"
                         autocomplete="off"
@@ -228,7 +269,6 @@
                   <!-- HTTP Read Timeout -->
                   <el-form-item label="HTTP Read Timeout" prop="read_timeout">
                     <el-input
-                      @input="save"
                       v-model="config.read_timeout"
                       placeholder="0s"
                       autocomplete="off"
@@ -242,7 +282,6 @@
                   <!-- HTTP Write Timeout -->
                   <el-form-item label="HTTP Write Timeout" prop="write_timeout">
                     <el-input
-                      @input="save"
                       v-model="config.write_timeout"
                       placeholder="0s"
                       autocomplete="off"
@@ -258,7 +297,6 @@
                   <!-- HTTP Read Header Timeout -->
                   <el-form-item label="HTTP Read Header Timeout" prop="read_header_timeout">
                     <el-input
-                      @input="save"
                       v-model="config.read_header_timeout"
                       placeholder="0s"
                       autocomplete="off"
@@ -272,7 +310,6 @@
                   <!-- HTTP Idle Timeout -->
                   <el-form-item label="HTTP Idle Timeout" prop="idle_timeout">
                     <el-input
-                      @input="save"
                       v-model="config.idle_timeout"
                       placeholder="0s"
                       autocomplete="off"
@@ -288,7 +325,7 @@
             <melody-card-item title="Options">
               <!-- Output encoding -->
               <el-form-item label="Output encoding">
-                <el-select v-model="config.output_encoding" @change="save">
+                <el-select v-model="config.output_encoding">
                   <el-option
                     v-for="item in output_encoding"
                     :key="item.value"
@@ -300,8 +337,95 @@
               </el-form-item>
               <!-- Allow non-RESTful resource naming -->
               <el-form-item label="Allow non-RESTful resource naming">
-                <el-switch @change="save" v-model="config.disable_rest"></el-switch>
+                <el-switch v-model="config.disable_rest"></el-switch>
               </el-form-item>
+            </melody-card-item>
+          </melody-card>
+
+          <melody-card>
+            <!-- Bot detector -->
+            <melody-card-item title="Bot detector">
+              <el-form-item>
+                <el-switch v-model="openBotDetector" @change="swtichBotDetector"></el-switch>
+              </el-form-item>
+              <template v-if="openBotDetector">
+                <el-row type="flex" class="row-bg" justify="space-around">
+                  <!-- Whitelist -->
+                  <el-col :span="11" class="container">
+                    <el-form-item label="Whitelist">
+                      <el-input
+                        v-model="curWhitelist"
+                        placeholder="MyAndroidClient/1.0"
+                        @change="saveWhitelist"
+                      ></el-input>
+                      <el-tag
+                        v-for="(white, index) in melody_botdetector.whitelist"
+                        :key="index"
+                        closable
+                        type="info"
+                        :style="index == 0 ? {} : { 'margin-left': '10px' }"
+                        @close="handleWhitelistTagClose(white)"
+                      >
+                        {{ white }}
+                      </el-tag>
+                      <div class="fs12">
+                        受信任的User-Agent列表(精确匹配)
+                      </div>
+                    </el-form-item>
+                  </el-col>
+                  <!-- Blacklist -->
+                  <el-col :span="11" class="container">
+                    <el-form-item label="Blacklist">
+                      <el-input
+                        v-model="curBlacklist"
+                        placeholder="axios/0.17.1"
+                        @change="saveBlacklist"
+                      ></el-input>
+                      <el-tag
+                        v-for="(black, index) in melody_botdetector.blacklist"
+                        :key="index"
+                        closable
+                        type="info"
+                        :style="index == 0 ? {} : { 'margin-left': '10px' }"
+                        @close="handleBlacklistTagClose(black)"
+                      >
+                        {{ black }}
+                      </el-tag>
+                      <div class="fs12">
+                        立即拒绝的User-Agent列表(精确匹配)
+                      </div>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <!-- Patterns -->
+                <el-form-item label="Patterns">
+                  <el-input
+                    v-model="curPatterns"
+                    placeholder="(facebookexternalhit)/.*"
+                    @change="savePatterns"
+                  ></el-input>
+                  <el-tag
+                    v-for="(pattern, index) in melody_botdetector.patterns"
+                    :key="index"
+                    closable
+                    type="info"
+                    :style="index == 0 ? {} : { 'margin-left': '10px' }"
+                    @close="handlePatternsTagClose(pattern)"
+                  >
+                    {{ pattern }}
+                  </el-tag>
+                  <div class="fs12">
+                    拒绝被正则表达式匹配到的User-Agent。
+                  </div>
+                </el-form-item>
+                <!-- Cache size -->
+                <el-form-item label="Cache size">
+                  <el-input-number v-model="melody_botdetector.cacheSize"></el-input-number>
+                  <div class="fs12">
+                    缓存用户代理的数量，以加快检测的速度。使用0表示不缓存。
+                  </div>
+                </el-form-item>
+              </template>
             </melody-card-item>
           </melody-card>
         </el-col>
@@ -317,7 +441,6 @@ import { validTimeDuration, validNumber } from '@/utils/regxp'
 
 export default {
   name: 'Service',
-  mounted() {},
   data() {
     let validPort = (rule, value, callback) => {
       return validNumber(value, callback)
@@ -337,6 +460,7 @@ export default {
         write_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
         idle_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
         read_header_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
+        max_age: [{ validator: validReadTimeout, trigger: 'blur' }],
       },
 
       etcdDisabled: true,
@@ -353,8 +477,14 @@ export default {
 
       openEnableHTTPS: serviceConfig.tls !== undefined,
       openCORS: serviceConfig.extra_config.melody_cors !== undefined,
+      openBotDetector: serviceConfig.extra_config.melody_botdetector !== undefined,
+
       curOrigin: '',
-      curHeader: '',
+      curAllowHeader: '',
+      curExposeHeader: '',
+      curWhitelist: '',
+      curBlacklist: '',
+      curPatterns: '',
 
       tls:
         serviceConfig.tls == undefined
@@ -369,9 +499,20 @@ export default {
               allow_origins: ['*'],
               expose_headers: ['Content-Length'],
               max_age: '12h',
-              allow_methods: ['GET'],
+              allow_methods: ['GET', 'POST'],
+              allow_headers: [],
+              allow_credentials: false,
             }
           : serviceConfig.extra_config.melody_cors,
+      melody_botdetector:
+        serviceConfig.extra_config.melody_botdetector == undefined
+          ? {
+              cacheSize: 0,
+              whitelist: [],
+              blacklist: [],
+              patterns: [],
+            }
+          : serviceConfig.extra_config.melody_botdetector,
     }
   },
   components: {
@@ -379,13 +520,6 @@ export default {
     MelodyCardItem,
   },
   methods: {
-    save() {
-      this.$refs.config.validate().catch(err => {
-        console.log(err)
-      })
-      this.$store.commit('updateServiceConfig', this.config)
-      this.$store.commit('removeUselessPropsAtServiceConfigLevel')
-    },
     saveAvailableHosts(value) {
       if (this.availableHosts.indexOf(this.curSDType.split(' ')[0] + ' - ' + value) == -1) {
         this.availableHosts.push(this.curSDType.split(' ')[0] + ' - ' + value)
@@ -408,20 +542,66 @@ export default {
           message: '请勿重复添加',
         })
       }
-      this.$store.commit('setExtraConfig', { name: 'melody_cors', config: this.melody_cors })
     },
-    saveHeader(value) {
-      let headers = this.melody_cors.expose_headers
+    saveAllowHeader(value) {
+      let headers = this.melody_cors.allow_headers
       if (headers.indexOf(value) == -1) {
         headers.push(value)
-        this.melody_cors.expose_headers = headers
-        this.curHeader = ''
+        this.melody_cors.allow_headers = headers
+        this.curAllowHeader = ''
       } else {
         this.$message({
           message: '请勿重复添加',
         })
       }
-      this.$store.commit('setExtraConfig', { name: 'melody_cors', config: this.melody_cors })
+    },
+    saveExposeHeader(value) {
+      let headers = this.melody_cors.expose_headers
+      if (headers.indexOf(value) == -1) {
+        headers.push(value)
+        this.melody_cors.expose_headers = headers
+        this.curExposeHeader = ''
+      } else {
+        this.$message({
+          message: '请勿重复添加',
+        })
+      }
+    },
+    saveWhitelist(value) {
+      let whitelist = this.melody_botdetector.whitelist
+      if (whitelist.indexOf(value) == -1) {
+        whitelist.push(value)
+        this.melody_botdetector.whitelist = whitelist
+        this.curWhitelist = ''
+      } else {
+        this.$message({
+          message: '请勿重复添加',
+        })
+      }
+    },
+    saveBlacklist(value) {
+      let blacklist = this.melody_botdetector.blacklist
+      if (blacklist.indexOf(value) == -1) {
+        blacklist.push(value)
+        this.melody_botdetector.blacklist = blacklist
+        this.curBlacklist = ''
+      } else {
+        this.$message({
+          message: '请勿重复添加',
+        })
+      }
+    },
+    savePatterns(value) {
+      let patterns = this.melody_botdetector.patterns
+      if (patterns.indexOf(value) == -1) {
+        patterns.push(value)
+        this.melody_botdetector.patterns = patterns
+        this.curPatterns = ''
+      } else {
+        this.$message({
+          message: '请勿重复添加',
+        })
+      }
     },
     handleAvailableHostsTagClose(value) {
       this.availableHosts.splice(this.availableHosts.indexOf(value), 1)
@@ -429,11 +609,21 @@ export default {
     },
     handleAllowedOriginsTagClose(value) {
       this.melody_cors.allow_origins.splice(this.melody_cors.allow_origins.indexOf(value), 1)
-      this.$store.commit('setExtraConfig', { name: 'melody_cors', config: this.melody_cors })
     },
     handleAllowedHeadersTagClose(value) {
+      this.melody_cors.allow_headers.splice(this.melody_cors.allow_headers.indexOf(value), 1)
+    },
+    handleExposeHeadersTagClose(value) {
       this.melody_cors.expose_headers.splice(this.melody_cors.expose_headers.indexOf(value), 1)
-      this.$store.commit('setExtraConfig', { name: 'melody_cors', config: this.melody_cors })
+    },
+    handleWhitelistTagClose(value) {
+      this.melody_botdetector.whitelist.splice(this.melody_botdetector.whitelist.indexOf(value), 1)
+    },
+    handleBlacklistTagClose(value) {
+      this.melody_botdetector.blacklist.splice(this.melody_botdetector.blacklist.indexOf(value), 1)
+    },
+    handlePatternsTagClose(value) {
+      this.melody_botdetector.patterns.splice(this.melody_botdetector.patterns.indexOf(value), 1)
     },
     swtichEnableHTTPS(enable) {
       if (enable) {
@@ -441,17 +631,21 @@ export default {
       } else {
         delete this.config.tls
       }
-      this.$store.commit('updateServiceConfig', this.config)
     },
     swtichCORS(enable) {
-      if (enable) {
-        this.$store.commit('setExtraConfig', { name: 'melody_cors', config: this.melody_cors })
-      } else {
+      if (!enable) {
         this.$store.commit('removeExtraConfig', { name: 'melody_cors' })
       }
     },
-    changeCORS() {
-      this.$store.commit('setExtraConfig', { name: 'melody_cors', config: this.melody_cors })
+    swtichBotDetector(enable) {
+      if (!enable) {
+        this.$store.commit('removeExtraConfig', { name: 'melody_botdetector' })
+      }
+    },
+    changeMaxAge() {
+      if (this.melody_cors.max_age == '') {
+        this.melody_cors.max_age = '12h'
+      }
     },
   },
   beforeRouteLeave(to, from, next) {
@@ -464,6 +658,36 @@ export default {
         })
       }
     })
+  },
+  watch: {
+    config: {
+      handler: function() {
+        this.$refs.config.validate().catch(err => {
+          console.log(err)
+        })
+        this.$store.commit('updateServiceConfig', this.config)
+        this.$store.commit('removeUselessPropsAtServiceConfigLevel')
+      },
+      deep: true,
+    },
+    melody_cors: {
+      handler: function() {
+        this.$store.commit('setExtraConfig', {
+          name: 'melody_cors',
+          config: this.melody_cors,
+        })
+      },
+      deep: true,
+    },
+    melody_botdetector: {
+      handler: function() {
+        this.$store.commit('setExtraConfig', {
+          name: 'melody_botdetector',
+          config: this.melody_botdetector,
+        })
+      },
+      deep: true,
+    },
   },
 }
 </script>
