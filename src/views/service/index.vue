@@ -41,7 +41,7 @@
                   </el-radio-button>
                 </el-radio-group>
                 <el-input
-                  style="margin-top: 10px"
+                  style="margin-top: 10px; margin-bottom: 10px;"
                   v-model="curAvailableHost"
                   placeholder="address"
                   @change="saveAvailableHosts"
@@ -625,7 +625,7 @@ export default {
         dialer_keep_alive: [{ validator: validReadTimeout, trigger: 'blur' }],
       },
 
-      etcdDisabled: true,
+      etcdDisabled: serviceConfig.extra_config.melody_etcd == undefined,
       disableSanitize: false,
       curSDType: 'Static address resolution',
       curAvailableHost: '',
