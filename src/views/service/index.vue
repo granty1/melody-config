@@ -430,6 +430,160 @@
           </melody-card>
         </el-col>
       </el-row>
+
+      <el-row type="flex" class="row-bg" justify="space-around">
+        <el-col :span="23" class="container">
+          <melody-card>
+            <melody-card-item title="HTTP Client settings (高级)">
+              <div class="fs12">
+                这些是用于处理查询后端的HTTP客户端的特定设置。您通常不需要设置这些值。
+              </div>
+              <el-row type="flex" class="row-bg" justify="space-around">
+                <el-col :span="7" class="container">
+                  <!-- IDLE Connection Timeout -->
+                  <el-form-item label="IDLE Connection Timeout" prop="idle_connection_timeout">
+                    <el-input
+                      v-model="config.idle_connection_timeout"
+                      placeholder="0s"
+                      autocomplete="off"
+                    ></el-input>
+                    <div class="fs12">
+                      Maximum amount of time an idle (keep-alive) connection will remain idle before
+                      closing itself. Zero means no limit
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="7" class="container">
+                  <!-- Response Header Timeout -->
+                  <el-form-item label="Response Header Timeout" prop="response_header_timeout">
+                    <el-input
+                      v-model="config.response_header_timeout"
+                      placeholder="0s"
+                      autocomplete="off"
+                    ></el-input>
+                    <div class="fs12">
+                      Time to wait for a server's response headers after fully writing the request.
+                      This time does not include the time to read the response body.
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="7" class="container">
+                  <!-- Expect Continue Timeout -->
+                  <el-form-item label="Expect Continue Timeout" prop="expect_continue_timeout">
+                    <el-input
+                      v-model="config.expect_continue_timeout"
+                      placeholder="0s"
+                      autocomplete="off"
+                    ></el-input>
+                    <div class="fs12">
+                      Time to wait for a server's first response headers after fully writing the
+                      request headers if the request has an
+                      <code>"Expect: 100-continue"</code> header. Zero means no timeout
+                    </div>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+
+              <el-row type="flex" class="row-bg" justify="space-around">
+                <el-col :span="5" class="container">
+                  <!-- Maximum IDLE connections -->
+                  <el-form-item label="Maximum IDLE connections" prop="max_idle_connections">
+                    <el-input
+                      v-model="config.max_idle_connections"
+                      placeholder="0"
+                      autocomplete="off"
+                    ></el-input>
+                    <div class="fs12">
+                      Maximum number of idle (keep-alive) connections across all hosts. Zero means
+                      no limit.
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="5" class="container">
+                  <!-- Maximum IDLE connections per host -->
+                  <el-form-item
+                    label="Maximum IDLE connections per host"
+                    prop="max_idle_connections_per_host"
+                  >
+                    <el-input
+                      v-model="config.max_idle_connections_per_host"
+                      placeholder="0"
+                      autocomplete="off"
+                    ></el-input>
+                    <div class="fs12">
+                      Maximum number of IDLE connections that you allow per-host. Defaults to
+                      <code>250</code>.
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="5" class="container">
+                  <!-- Disable Keep-Alives -->
+                  <el-form-item label="Disable Keep-Alives">
+                    <el-switch v-model="config.disable_keep_alives"></el-switch>
+                    <div class="fs12">
+                      If set prevents re-use of TCP connections between different HTTP request
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="5" class="container">
+                  <!-- Disable Compression -->
+                  <el-form-item label="Disable Compression">
+                    <el-switch v-model="config.disable_compression"></el-switch>
+                    <div class="fs12">
+                      If set, prevents the Transport from requesting compression with an
+                      <code>"Accept-Encoding: gzip"</code> request header.
+                    </div>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+
+              <el-row type="flex" class="row-bg" justify="space-around">
+                <el-col :span="7" class="container">
+                  <!-- Dialer Timeout -->
+                  <el-form-item label="Dialer Timeout" prop="dialer_timeout">
+                    <el-input
+                      v-model="config.dialer_timeout"
+                      placeholder="0s"
+                      autocomplete="off"
+                    ></el-input>
+                    <div class="fs12">
+                      Maximum amount of time a dial will wait for a connect to complete
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="7" class="container">
+                  <!--Dialer Fallback Delay -->
+                  <el-form-item label="Dialer Fallback Delay" prop="dialer_fallback_delay">
+                    <el-input
+                      v-model="config.dialer_fallback_delay"
+                      placeholder="0s"
+                      autocomplete="off"
+                    ></el-input>
+                    <div class="fs12">
+                      Length of time to wait before spawning a fallback connection. If zero, a
+                      default delay of 300ms is used.
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="7" class="container">
+                  <!-- Dialer Keep-Alive -->
+                  <el-form-item label="Dialer Keep-Alive" prop="dialer_keep_alive">
+                    <el-input
+                      v-model="config.dialer_keep_alive"
+                      placeholder="0s"
+                      autocomplete="off"
+                    ></el-input>
+                    <div class="fs12">
+                      Keep-alive period for an active network connection. If zero, keep-alives are
+                      not enabled.
+                    </div>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </melody-card-item>
+          </melody-card>
+        </el-col>
+      </el-row>
     </el-form>
   </div>
 </template>
@@ -461,6 +615,14 @@ export default {
         idle_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
         read_header_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
         max_age: [{ validator: validReadTimeout, trigger: 'blur' }],
+        idle_connection_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
+        response_header_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
+        expect_continue_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
+        max_idle_connections: [{ validator: validPort, trigger: 'blur' }],
+        max_idle_connections_per_host: [{ validator: validPort, trigger: 'blur' }],
+        dialer_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
+        dialer_fallback_delay: [{ validator: validReadTimeout, trigger: 'blur' }],
+        dialer_keep_alive: [{ validator: validReadTimeout, trigger: 'blur' }],
       },
 
       etcdDisabled: true,
