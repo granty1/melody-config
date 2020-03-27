@@ -3,6 +3,7 @@ import Vue from 'vue'
 const state = {
   serviceConfig: {
     extra_config: {},
+    endpoints: [],
   },
   activeCards: [],
 }
@@ -43,6 +44,9 @@ const mutations = {
       if (prop === 'extra_config') {
         continue
       }
+      if (prop === 'endpoints') {
+        continue
+      }
       if (
         state.serviceConfig.prop === '' ||
         state.serviceConfig.prop === [] ||
@@ -51,6 +55,34 @@ const mutations = {
         delete state.serviceConfig[prop]
         Vue.ls.set('config', state.serviceConfig)
       }
+    }
+  },
+  /**
+   * 在ServiceConfig中添加新的endpoint
+   * @param {*} state
+   * @param {*} endpointConfig 要添加的endpoint
+   */
+  addEndpointConfig(state, endpointConfig) {
+    if (endpointConfig && endpointConfig != null) {
+      if (state.serviceConfig.endpoints === undefined) {
+        state.serviceConfig['endpoints'] = []
+      }
+      state.serviceConfig.endpoints.push(endpointConfig)
+      Vue.ls.set('config', state.serviceConfig)
+      let _obj = JSON.stringify(state.serviceConfig)
+      let objClone = JSON.parse(_obj)
+      this.commit('updateServiceConfig', objClone)
+    }
+  },
+  updateEndpointConfig(state, endpointConfig) {
+    if (endpointConfig && endpointConfig != null) {
+      if (state.serviceConfig.endpoints === undefined) {
+        state.serviceConfig['endpoints'] = endpointConfig
+      }
+      Vue.ls.set('config', state.serviceConfig)
+      let _obj = JSON.stringify(state.serviceConfig)
+      let objClone = JSON.parse(_obj)
+      this.commit('updateServiceConfig', objClone)
     }
   },
   /**

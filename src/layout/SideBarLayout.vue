@@ -43,11 +43,13 @@
               :route="{ name: 'endpoints', params: { url: index } }"
             >
               <template slot="title">
-                <i class="el-icon-odometer"></i>
-                <el-tag size="medium" :type="endpoint.method == 'GET' ? 'success' : ''">
+                <!-- <i class="el-icon-odometer"></i> -->
+                <i class="el-icon-delete" @click="delEndpointConfirm(index)"></i>
+                <el-tag size="medium" :type="methodType(endpoint.method)">
                   {{ endpoint.method }}
                 </el-tag>
-                {{ endpoint.url }}
+                {{ easyEndpoint(endpoint.endpoint) }}
+                <!-- <i class="el-icon-delete" style="margin-left:43px" @click="delEndpointConfirm(index)"></i> -->
               </template>
             </el-menu-item>
           </el-submenu>
@@ -70,35 +72,85 @@
 </template>
 
 <script>
+import EndpointConfig from '@/utils/config/EndpointConfig.js'
 export default {
   name: 'SideBar',
   data() {
     return {
-      endpoints: [],
+      endpoints: this.$store.getters.serviceConfig.endpoints || [],
       isCollapse: this.$store.getters.isCollapse,
     }
   },
   methods: {
     addEndpoint() {
-      this.endpoints.push({
-        method: 'GET',
-        url: '/new_endpoint',
+      const endpointConfig = new EndpointConfig()
+      this.$store.commit('addEndpointConfig', endpointConfig)
+    },
+    methodType(method) {
+      if (method === 'GET') {
+        return 'success'
+      } else if (method === 'POST') {
+        return 'warning'
+      } else if (method === 'DELETE') {
+        return 'danger'
+      } else {
+        return 'info'
+      }
+    },
+    easyEndpoint(name) {
+      if (name.length <= 13) {
+        return name
+      } else {
+        let n = name.slice(0, 13) + ''
+        name = n + '...'
+        return name
+      }
+    },
+    delEndpointConfirm(index) {
+      this.$confirm('此操作将删除该endpoint配置, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
       })
+        .then(() => {
+          this.endpointCfg.splice(index, 1)
+          if (this.endpointCfg.length >= 1) {
+            let i = index % this.endpointCfg.length
+            this.$router.push({ name: 'endpoints', path: '/endpoints', params: { url: i } })
+          } else {
+            this.$router.push('/')
+          }
+
+          this.$message({
+            type: 'success',
+            message: '删除成功!',
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除',
+          })
+        })
     },
   },
   computed: {
     myCollapse() {
       return this.$store.getters.isCollapse
     },
+    endpointCfg() {
+      return this.$store.getters.serviceConfig.endpoints
+    },
   },
   watch: {
     myCollapse: function(newVal) {
       this.isCollapse = newVal
-      // if(newVal === false){
-
-      // }else {
-
-      // }
+    },
+    endpointCfg: {
+      handler: function(newVal) {
+        this.endpoints = newVal
+      },
+      deep: true,
     },
   },
 }
