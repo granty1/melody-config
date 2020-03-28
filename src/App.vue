@@ -29,9 +29,6 @@ export default {
         : this.$ls.get('active_cards')
     this.$store.commit('updateActiveCards', activeCards)
 
-    let loggingConfig = this.$ls.get('logging') === null ? {} : this.$ls.get('logging')
-    this.$store.dispatch('updateBaseLogger', { logging: loggingConfig, add: true })
-
     let availableHosts =
       this.$ls.get('availableHosts') === null ? [] : this.$ls.get('availableHosts')
     this.$store.commit('setAvailableHosts', availableHosts)
