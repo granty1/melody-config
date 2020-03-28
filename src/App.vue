@@ -20,6 +20,7 @@ export default {
     config.version = 1
     config.output_encoding = config.output_encoding == undefined ? 'json' : config.output_encoding
     config.disable_rest = config.disable_rest == undefined ? false : config.disable_rest
+    config.extra_config = config.extra_config == undefined ? {} : config.extra_config
     this.$store.commit('updateServiceConfig', config)
 
     let activeCards =
