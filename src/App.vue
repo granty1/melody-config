@@ -32,9 +32,6 @@ export default {
     let availableHosts =
       this.$ls.get('availableHosts') === null ? [] : this.$ls.get('availableHosts')
     this.$store.commit('setAvailableHosts', availableHosts)
-
-    let httpSecure = this.$ls.get('safe') === null ? null : this.$ls.get('safe')
-    this.$store.dispatch('updateHttpSecure', { safe: httpSecure, add: true })
   },
 }
 </script>

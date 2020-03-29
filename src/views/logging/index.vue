@@ -467,6 +467,7 @@ export default {
         })
       } else {
         this.$store.commit('removeExtraConfig', { name: 'melody_gologging' })
+        this.$store.commit('removeExtraConfig', { name: 'melody_logstash' })
       }
     },
     switchLogStash(enable) {
@@ -541,18 +542,26 @@ export default {
     },
     melody_metrics: {
       handler: function() {
-        this.$store.commit('setExtraConfig', {
-          name: 'melody_metrics',
-          config: this.melody_metrics,
+        this.$refs.config.validate(valid => {
+          if (valid) {
+            this.$store.commit('setExtraConfig', {
+              name: 'melody_metrics',
+              config: this.melody_metrics,
+            })
+          }
         })
       },
       deep: true,
     },
     melody_influxdb: {
       handler: function() {
-        this.$store.commit('setExtraConfig', {
-          name: 'melody_influxdb',
-          config: this.melody_influxdb,
+        this.$refs.config.validate(valid => {
+          if (valid) {
+            this.$store.commit('setExtraConfig', {
+              name: 'melody_influxdb',
+              config: this.melody_influxdb,
+            })
+          }
         })
       },
       deep: true,
