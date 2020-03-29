@@ -199,12 +199,8 @@
                   </el-col>
                   <!-- Max age -->
                   <el-col :span="11" class="container">
-                    <el-form-item label="Max age" prop="max_age">
-                      <el-input
-                        v-model="melody_cors.max_age"
-                        placeholder="12h"
-                        @input="changeMaxAge"
-                      ></el-input>
+                    <el-form-item label="Max age" prop="extra_config.melody_cors.max_age">
+                      <el-input v-model="melody_cors.max_age" placeholder="12h"></el-input>
                       <div class="fs12">
                         响应可以缓存多长时间
                       </div>
@@ -596,33 +592,30 @@ import { validTimeDuration, validNumber } from '@/utils/regxp'
 export default {
   name: 'Service',
   data() {
-    let validPort = (rule, value, callback) => {
-      return validNumber(value, callback)
-    }
-    let validReadTimeout = (rule, value, callback) => {
-      return validTimeDuration(value, callback)
-    }
-
     let serviceConfig = this.$store.getters.serviceConfig
     return {
       config: serviceConfig,
       serviceConfigRules: {
-        port: [{ validator: validPort, trigger: 'blur' }],
-        read_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
-        timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
-        cache_ttl: [{ validator: validReadTimeout, trigger: 'blur' }],
-        write_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
-        idle_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
-        read_header_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
-        max_age: [{ validator: validReadTimeout, trigger: 'blur' }],
-        idle_connection_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
-        response_header_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
-        expect_continue_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
-        max_idle_connections: [{ validator: validPort, trigger: 'blur' }],
-        max_idle_connections_per_host: [{ validator: validPort, trigger: 'blur' }],
-        dialer_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
-        dialer_fallback_delay: [{ validator: validReadTimeout, trigger: 'blur' }],
-        dialer_keep_alive: [{ validator: validReadTimeout, trigger: 'blur' }],
+        extra_config: {
+          melody_cors: {
+            max_age: [{ validator: validTimeDuration, trigger: 'blur' }],
+          },
+        },
+        port: [{ validator: validNumber, trigger: 'blur' }],
+        read_timeout: [{ validator: validTimeDuration, trigger: 'blur' }],
+        timeout: [{ validator: validTimeDuration, trigger: 'blur' }],
+        cache_ttl: [{ validator: validTimeDuration, trigger: 'blur' }],
+        write_timeout: [{ validator: validTimeDuration, trigger: 'blur' }],
+        idle_timeout: [{ validator: validTimeDuration, trigger: 'blur' }],
+        read_header_timeout: [{ validator: validTimeDuration, trigger: 'blur' }],
+        idle_connection_timeout: [{ validator: validTimeDuration, trigger: 'blur' }],
+        response_header_timeout: [{ validator: validTimeDuration, trigger: 'blur' }],
+        expect_continue_timeout: [{ validator: validTimeDuration, trigger: 'blur' }],
+        max_idle_connections: [{ validator: validNumber, trigger: 'blur' }],
+        max_idle_connections_per_host: [{ validator: validNumber, trigger: 'blur' }],
+        dialer_timeout: [{ validator: validTimeDuration, trigger: 'blur' }],
+        dialer_fallback_delay: [{ validator: validTimeDuration, trigger: 'blur' }],
+        dialer_keep_alive: [{ validator: validTimeDuration, trigger: 'blur' }],
       },
 
       etcdDisabled: serviceConfig.extra_config.melody_etcd == undefined,
@@ -795,18 +788,23 @@ export default {
       }
     },
     swtichCORS(enable) {
-      if (!enable) {
+      if (enable) {
+        this.$store.commit('setExtraConfig', {
+          name: 'melody_cors',
+          config: this.melody_cors,
+        })
+      } else {
         this.$store.commit('removeExtraConfig', { name: 'melody_cors' })
       }
     },
     swtichBotDetector(enable) {
-      if (!enable) {
+      if (enable) {
+        this.$store.commit('setExtraConfig', {
+          name: 'melody_botdetector',
+          config: this.melody_botdetector,
+        })
+      } else {
         this.$store.commit('removeExtraConfig', { name: 'melody_botdetector' })
-      }
-    },
-    changeMaxAge() {
-      if (this.melody_cors.max_age == '') {
-        this.melody_cors.max_age = '12h'
       }
     },
   },
@@ -834,9 +832,13 @@ export default {
     },
     melody_cors: {
       handler: function() {
-        this.$store.commit('setExtraConfig', {
-          name: 'melody_cors',
-          config: this.melody_cors,
+        this.$refs.config.validate(valid => {
+          if (valid) {
+            this.$store.commit('setExtraConfig', {
+              name: 'melody_cors',
+              config: this.melody_cors,
+            })
+          }
         })
       },
       deep: true,

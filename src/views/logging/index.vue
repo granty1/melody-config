@@ -374,9 +374,6 @@ export default {
     },
   },
   data() {
-    let validMetricsCollectionTime = (rule, value, callback) => {
-      return validTimeDuration(value, callback)
-    }
     let serviceConfig = this.$store.getters.serviceConfig
     return {
       config: serviceConfig,
@@ -389,17 +386,17 @@ export default {
       loggingRules: {
         extra_config: {
           melody_metrics: {
-            collection_time: [{ validator: validMetricsCollectionTime, trigger: 'blur' }],
+            collection_time: [{ validator: validTimeDuration, trigger: 'blur' }],
           },
           melody_influxdb: {
             address: [{ required: true, message: 'InfluxDB的地址是必须的' }],
             ttl: [
               { required: true, message: '数据写入的时间窗口是必须的', trigger: 'blur' },
-              { validator: validMetricsCollectionTime, trigger: 'blur' },
+              { validator: validTimeDuration, trigger: 'blur' },
             ],
             time_out: [
               { required: true, message: '数据写入的时延是必须的', trigger: 'blur' },
-              { validator: validMetricsCollectionTime, trigger: 'blur' },
+              { validator: validTimeDuration, trigger: 'blur' },
             ],
           },
         },
