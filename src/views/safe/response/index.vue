@@ -1,37 +1,26 @@
 <template>
   <div>
-    <el-form ref="safe" label-position="top" :model="safe" status-icon>
+    <el-form ref="config" label-position="top" :model="config" :rules="secureRules" status-icon>
       <melody-card>
         <melody-card-item title="Security headers">
           <!-- Security Header Enable Switch -->
           <el-form-item label="Enable HTTP secure middleware">
-            <el-switch
-              @change="securityHeaderEnableHandle"
-              v-model="safe.securityHeaderEnable"
-            ></el-switch>
+            <el-switch @change="switchHttpSecure" v-model="enableHttpSecure"></el-switch>
             <div style="font-size: 12px">
               Security
               headers增强了API中的安全性，并且是可选的。您可以添加AllowedHosts、SSL、HSTS选项和其他安全策略。
             </div>
           </el-form-item>
-          <template v-if="safe.securityHeaderEnable">
+          <template v-if="enableHttpSecure">
             <!-- Allowed hosts -->
             <div>
               <span class="small_title">1.Allowed hosts</span>
               <el-form-item label="">
-                <el-input
-                  clearable
-                  placeholder="hostname:port"
-                  @keyup.enter.native="addHostHandle"
-                  @input="updateHttpSecure"
-                  v-model="safe.curAllowHost"
-                >
-                  <el-button slot="append" @click="addHostHandle" type="primary"
-                    >Add host</el-button
-                  >
+                <el-input placeholder="hostname:port" v-model="curHost" @change="addHostHandle">
+                  <el-button slot="append" type="primary">Add host</el-button>
                 </el-input>
-                <div v-if="safe.config.allowed_hosts">
-                  <template v-for="(item, index) in safe.config.allowed_hosts">
+                <div v-if="melody_httpsecure.allowed_hosts">
+                  <template v-for="(item, index) in melody_httpsecure.allowed_hosts">
                     <el-tag
                       type="info"
                       :style="index == 0 ? {} : { 'margin-left': '10px' }"
@@ -59,15 +48,11 @@
                   <el-col :span="16">
                     <el-input
                       clearable
-                      @input="updateHttpSecure"
-                      :disabled="!safe.config.ssl_redirect"
-                      v-model="safe.config.ssl_host"
+                      :disabled="!melody_httpsecure.ssl_redirect"
+                      v-model="melody_httpsecure.ssl_host"
                       placeholder="ssl host domain"
                     >
-                      <el-checkbox
-                        @change="updateHttpSecure"
-                        slot="prepend"
-                        v-model="safe.config.ssl_redirect"
+                      <el-checkbox slot="prepend" v-model="melody_httpsecure.ssl_redirect"
                         >Force SSL</el-checkbox
                       >
                     </el-input>
@@ -75,9 +60,8 @@
                   <el-col :offset="1" :span="7">
                     <el-input
                       clearable
-                      @input="updateHttpSecure"
-                      :disabled="!safe.config.ssl_redirect"
-                      v-model="safe.config.ssl_port"
+                      :disabled="!melody_httpsecure.ssl_redirect"
+                      v-model="melody_httpsecure.ssl_port"
                       placeholder="port"
                     ></el-input>
                   </el-col>
@@ -91,8 +75,7 @@
                 <el-input
                   clearable
                   placeholder="/path/to/cert"
-                  @input="updateHttpSecure"
-                  v-model="safe.config.ssl_certificate"
+                  v-model="melody_httpsecure.ssl_certificate"
                 ></el-input>
                 <div style="font-size: 12px">
                   <code>RSA</code>证书的绝对路径，以备您使用。<code
@@ -104,8 +87,7 @@
                 <el-input
                   clearable
                   placeholder="/path/to/private/key"
-                  @input="updateHttpSecure"
-                  v-model="safe.config.ssl_private_key"
+                  v-model="melody_httpsecure.ssl_private_key"
                 ></el-input>
                 <div style="font-size: 12px">
                   <code>RSA</code>私钥的绝对路径。<code
@@ -121,7 +103,7 @@
                       <th class="proxy_headers_title">Header value</th>
                       <th></th>
                     </tr>
-                    <template v-for="(value, name, index) in safe.config.ssl_proxy_headers">
+                    <template v-for="(value, name, index) in melody_httpsecure.ssl_proxy_headers">
                       <tr :key="`header_${index}`">
                         <td>{{ name }}</td>
                         <td>{{ value }}</td>
@@ -137,7 +119,7 @@
                         <el-input
                           clearable
                           @keyup.enter.native="addProxyHeaderClickHandle"
-                          v-model="safe.curProxyHeader.header"
+                          v-model="curProxyHeader.header"
                           placeholder="X-Forwarded-Proto"
                         ></el-input>
                       </td>
@@ -145,7 +127,7 @@
                         <el-input
                           clearable
                           @keyup.enter.native="addProxyHeaderClickHandle"
-                          v-model="safe.curProxyHeader.value"
+                          v-model="curProxyHeader.value"
                           placeholder="https"
                         ></el-input>
                       </td>
@@ -168,13 +150,13 @@
             <!-- HSTS -->
             <div>
               <span class="small_title">3.HTTP Strict Transport Security (HSTS)</span>
-              <el-form-item label="">
+              <el-form-item label="" prop="extra_config.melody_httpsecure.sts_seconds">
                 <div style="font-size: 12px">
                   HSTS是一种网络安全策略机制，有助于保护网站免受协议降级攻击和cookie劫持。它允许web服务器声明web浏览器（或其他符合要求的用户代理）只应使用安全的HTTPS连接与之交互，而不应通过不安全的HTTP协议。使用时，与http的传入链接将在访问服务器之前转换为https。语法示例：<code
                     >Strict-Transport-Security: max-age=31536000; includeSubDomains</code
                   >
                 </div>
-                <el-input v-model="safe.config.sts_seconds" @input="updateHttpSecure">
+                <el-input v-model="melody_httpsecure.sts_seconds">
                   <span slot="prepend">max-age</span>
                   <span slot="append">seconds</span>
                 </el-input>
@@ -184,9 +166,8 @@
               </el-form-item>
               <el-form-item label="">
                 <el-checkbox
-                  @change="updateHttpSecure"
                   label="Include also subdomains"
-                  v-model="safe.config.sts_include_subdomains"
+                  v-model="melody_httpsecure.sts_include_subdomains"
                 ></el-checkbox>
                 <div style="font-size: 12px">
                   如果将此值设置为true，则<code>includeS ubdomains</code>指令将附加到严格传输安全头
@@ -198,19 +179,18 @@
               <span class="small_title">4.Clickjacking</span>
               <el-form-item label="">
                 <el-checkbox
-                  @change="updateHttpSecure"
-                  v-model="safe.config.frame_deny"
+                  v-model="melody_httpsecure.frame_deny"
                   label="Enable clickjacking protection"
                 ></el-checkbox>
                 <div style="font-size: 12px">
                   通过添加头<code>X-Frame-Options:DENY</code>，在设置为<code>true</code>时提供服务器端的部分保护，防止点击劫持。
                 </div>
               </el-form-item>
-              <template v-if="safe.config.frame_deny">
+              <template v-if="melody_httpsecure.frame_deny">
                 <el-form-item label="">
                   <el-input
                     clearable
-                    v-model="safe.config.custom_frame_options_value"
+                    v-model="melody_httpsecure.custom_frame_options_value"
                     placeholder="DENY"
                   >
                     <span slot="prepend">X-Frame-Options:</span>
@@ -248,8 +228,7 @@
               <el-form-item label="">
                 <el-input
                   clearable
-                  @input="updateHttpSecure"
-                  v-model="safe.config.hpkp_public_key"
+                  v-model="melody_httpsecure.hpkp_public_key"
                   placeholder='pin-sha256="base64=="; max-age=expireTime [; includeSubDomains][; report-uri="reportURI"]'
                 >
                   <span slot="prepend">Public-Key-Pins:</span>
@@ -264,8 +243,7 @@
               <span class="small_title">6.Sniffing</span>
               <el-form-item label="">
                 <el-checkbox
-                  @change="updateHttpSecure"
-                  v-model="safe.config.content_type_nosniff"
+                  v-model="melody_httpsecure.content_type_nosniff"
                   label="MIME-sniffing prevention"
                 ></el-checkbox>
                 <div style="font-size: 12px">
@@ -279,8 +257,7 @@
               <span class="small_title">7.Cross-site scripting (XSS) protection</span>
               <el-form-item label="">
                 <el-checkbox
-                  @change="updateHttpSecure"
-                  v-model="safe.config.browser_xss_filter"
+                  v-model="melody_httpsecure.browser_xss_filter"
                   label="Browser cross-site scripting (XSS) filter"
                 ></el-checkbox>
                 <div style="font-size: 12px">
@@ -291,8 +268,7 @@
               <el-form-item label="">
                 <el-input
                   clearable
-                  @input="updateHttpSecure"
-                  v-model="safe.config.content_security_policy"
+                  v-model="melody_httpsecure.content_security_policy"
                   placeholder="default-src:'self'"
                 >
                   <span slot="prepend">Content-Security-Policy:</span>
@@ -318,90 +294,117 @@
 <script>
 import MelodyCard from '@/components/MelodyCard'
 import MelodyCardItem from '@/components/MelodyCardItem'
+import { validNumber } from '@/utils/regxp'
 export default {
   name: 'ResponseHeaderConfig',
   components: {
     MelodyCard,
     MelodyCardItem,
   },
-  mounted() {
-    let safeConfig = this.$store.getters.safeConfig
-    if (safeConfig && safeConfig.config) {
-      this.safe = safeConfig
-    }
-  },
   data() {
+    let validSeconds = (rule, value, callback) => {
+      return validNumber(value, callback)
+    }
+    let serviceConfig = this.$store.getters.serviceConfig
     return {
-      safe: {
-        config: {
-          allowed_hosts: [],
-          ssl_redirect: false,
-          ssl_host: '',
-          ssl_port: '',
-          ssl_certificate: '',
-          ssl_private_key: '',
-          ssl_proxy_headers: {},
-          sts_seconds: 0,
-          sts_include_subdomains: false,
-          frame_deny: false,
-          custom_frame_options_value: '',
-          hpkp_public_key: '',
-          content_type_nosniff: false,
-          browser_xss_filter: false,
-          content_security_policy: '',
-        },
-        securityHeaderEnable: false,
-        curAllowHost: '',
-        curProxyHeader: {
-          header: '',
-          value: '',
+      secureRules: {
+        extra_config: {
+          melody_httpsecure: {
+            sts_seconds: [{ validator: validSeconds, trigger: 'blur' }],
+          },
         },
       },
+      config: serviceConfig,
+      enableHttpSecure: serviceConfig.extra_config.melody_httpsecure !== undefined,
+      melody_httpsecure:
+        serviceConfig.extra_config.melody_httpsecure == undefined
+          ? {
+              allowed_hosts: [],
+              ssl_redirect: false,
+              ssl_host: '',
+              ssl_port: '',
+              ssl_certificate: '',
+              ssl_private_key: '',
+              ssl_proxy_headers: {},
+              sts_seconds: 0,
+              sts_include_subdomains: false,
+              frame_deny: false,
+              custom_frame_options_value: '',
+              hpkp_public_key: '',
+              content_type_nosniff: false,
+              browser_xss_filter: false,
+              content_security_policy: '',
+            }
+          : serviceConfig.extra_config.melody_httpsecure,
+      curProxyHeader: {
+        header: '',
+        value: '',
+      },
+      curHost: '',
     }
   },
   methods: {
-    securityHeaderEnableHandle(enable) {
+    switchHttpSecure(enable) {
       if (enable) {
-        this.updateHttpSecure()
+        this.$store.commit('setExtraConfig', {
+          name: 'melody_httpsecure',
+          config: this.melody_httpsecure,
+        })
       } else {
-        this.$store.dispatch('updateHttpSecure', { safe: null, add: false })
+        this.$store.commit('removeExtraConfig', { name: 'melody_httpsecure' })
       }
     },
-    addHostHandle() {
-      if (
-        this.safe.curAllowHost &&
-        this.safe.config.allowed_hosts.indexOf(this.safe.curAllowHost) == -1
-      ) {
-        this.safe.config.allowed_hosts.push(this.safe.curAllowHost)
+    addHostHandle(value) {
+      let array = this.melody_httpsecure.allowed_hosts
+      if (array.indexOf(value) == -1) {
+        array.push(value)
+        this.melody_httpsecure.allowed_hosts = array
       }
-      this.updateHttpSecure()
     },
     removeHostHandle(index) {
-      this.safe.config.allowed_hosts.splice(index, 1)
-      this.updateHttpSecure()
+      this.melody_httpsecure.allowed_hosts.splice(index, 1)
     },
     addProxyHeaderClickHandle() {
-      if (this.safe.curProxyHeader.header && this.safe.curProxyHeader.value) {
+      if (this.curProxyHeader.header && this.curProxyHeader.value) {
         let obj = {}
-        obj[this.safe.curProxyHeader.header] = this.safe.curProxyHeader.value
-        this.safe.config.ssl_proxy_headers = Object.assign(
+        obj[this.curProxyHeader.header] = this.curProxyHeader.value
+        this.melody_httpsecure.ssl_proxy_headers = Object.assign(
           {},
-          this.safe.config.ssl_proxy_headers,
+          this.melody_httpsecure.ssl_proxy_headers,
           obj
         )
       }
-      this.updateHttpSecure()
     },
     removeProxyHeaderClickHandle(key) {
-      this.$delete(this.safe.config.ssl_proxy_headers, key)
-      this.updateHttpSecure()
+      this.$delete(this.melody_httpsecure.ssl_proxy_headers, key)
     },
     frameTagClickHandle(value) {
-      this.safe.config.custom_frame_options_value = value
-      this.updateHttpSecure()
+      this.melody_httpsecure.custom_frame_options_value = value
     },
-    updateHttpSecure() {
-      this.$store.dispatch('updateHttpSecure', { safe: this.safe, add: true })
+  },
+  watch: {
+    config: {
+      handler: function() {
+        this.$refs.config.validate().catch(err => {
+          console.log(err)
+        })
+        this.$store.commit('updateServiceConfig', this.config)
+        this.$store.commit('removeUselessPropsAtServiceConfigLevel')
+      },
+      deep: true,
+    },
+    melody_httpsecure: {
+      handler: function() {
+        this.$refs.config.validate(valid => {
+          if (valid) {
+            this.$store.commit('setExtraConfig', {
+              name: 'melody_httpsecure',
+              config: this.melody_httpsecure,
+            })
+          }
+        })
+      },
+      deep: true,
     },
   },
 }
