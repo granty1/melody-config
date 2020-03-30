@@ -84,7 +84,7 @@ export default {
       }
     },
     clearCache() {
-      this.$msgbox('hello')
+      this.$msgbox('清除缓存')
 
       this.$store.commit('updateServiceConfig', { version: 1 })
       this.$ls.remove('logging')
