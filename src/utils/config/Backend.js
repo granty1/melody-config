@@ -4,6 +4,10 @@ class Backend {
     this.method = 'GET'
     this.extra_config = {}
     this.host = []
+    this.encoding = 'json'
+    this.blacklist = []
+    this.whitelist = []
+    this.mapping = {}
   }
 }
 

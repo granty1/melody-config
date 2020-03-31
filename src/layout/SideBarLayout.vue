@@ -99,11 +99,23 @@ export default {
     },
     easyEndpoint(name) {
       if (name.length <= 13) {
-        return name
+        if(name && name.length>0){
+          return name
+        }else {
+          return 'none'
+        }
+        
       } else {
         let n = name.slice(0, 13) + ''
         name = n + '...'
         return name
+      }
+    },
+    easyEndpointMethod(m) {
+      if(m && m != '' && m != undefined){
+        return m
+      } else {
+        return 'none'
       }
     },
     delEndpointConfirm(index) {
