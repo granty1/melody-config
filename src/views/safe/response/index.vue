@@ -302,15 +302,12 @@ export default {
     MelodyCardItem,
   },
   data() {
-    let validSeconds = (rule, value, callback) => {
-      return validNumber(value, callback)
-    }
     let serviceConfig = this.$store.getters.serviceConfig
     return {
       secureRules: {
         extra_config: {
           melody_httpsecure: {
-            sts_seconds: [{ validator: validSeconds, trigger: 'blur' }],
+            sts_seconds: [{ validator: validNumber, trigger: 'blur' }],
           },
         },
       },
