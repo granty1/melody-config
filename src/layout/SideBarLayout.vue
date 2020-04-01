@@ -99,12 +99,11 @@ export default {
     },
     easyEndpoint(name) {
       if (name.length <= 13) {
-        if(name && name.length>0){
+        if (name && name.length > 0) {
           return name
-        }else {
+        } else {
           return 'none'
         }
-        
       } else {
         let n = name.slice(0, 13) + ''
         name = n + '...'
@@ -112,7 +111,7 @@ export default {
       }
     },
     easyEndpointMethod(m) {
-      if(m && m != '' && m != undefined){
+      if (m && m != '' && m != undefined) {
         return m
       } else {
         return 'none'

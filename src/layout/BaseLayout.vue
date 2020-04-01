@@ -106,8 +106,6 @@ export default {
             message: '已取消删除',
           })
         })
-
-
     },
     setCollapse() {
       this.$store.commit('setIsCollapse', !this.isCollapse)
