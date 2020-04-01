@@ -679,7 +679,7 @@ export default {
               expose_headers: ['Content-Length'],
               max_age: '12h',
               allow_methods: ['GET', 'POST'],
-              allow_headers: [],
+              allow_headers: ['*'],
               allow_credentials: false,
             }
           : serviceConfig.extra_config.melody_cors,
