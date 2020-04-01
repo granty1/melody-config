@@ -28,7 +28,7 @@
                 style="margin-top: 10px; margin-bottom: 10px;"
                 v-model="curAvailableHost"
                 placeholder="address"
-                @change="saveAvailableHosts"
+                @keyup.enter.native="saveAvailableHosts"
               >
                 <template slot="prepend">
                   <el-checkbox v-model="disableSanitize">disable sanitize</el-checkbox>
@@ -68,7 +68,7 @@
                   <el-input
                     v-model="curMachine"
                     placeholder="http://example.com:4001"
-                    @change="saveMachine"
+                    @keyup.enter.native="saveMachine"
                   ></el-input>
                   <div class="fs12">
                     Etcd servers you want Melody to make use of for host resolution
@@ -148,9 +148,6 @@ export default {
   name: 'sd',
   data() {
     let serviceConfig = this.$store.getters.serviceConfig
-    let validReadTimeout = (rule, value, callback) => {
-      return validTimeDuration(value, callback)
-    }
     let etcdInit = {
       machines: ['http://127.0.0.1:2379'],
       dial_timeout: '5s',
@@ -166,9 +163,9 @@ export default {
           ? etcdInit
           : serviceConfig.extra_config.melody_etcd,
       etcdRules: {
-        dial_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
-        dial_keepalive: [{ validator: validReadTimeout, trigger: 'blur' }],
-        header_timeout: [{ validator: validReadTimeout, trigger: 'blur' }],
+        dial_timeout: [{ validator: validTimeDuration, trigger: 'blur' }],
+        dial_keepalive: [{ validator: validTimeDuration, trigger: 'blur' }],
+        header_timeout: [{ validator: validTimeDuration, trigger: 'blur' }],
       },
 
       curSDType: 'Static address resolution',
@@ -185,9 +182,12 @@ export default {
     MelodyCardItem,
   },
   methods: {
-    saveAvailableHosts(value) {
-      if (this.availableHosts.indexOf(this.curSDType.split(' ')[0] + ' - ' + value) == -1) {
-        this.availableHosts.push(this.curSDType.split(' ')[0] + ' - ' + value)
+    saveAvailableHosts() {
+      if (
+        this.availableHosts.indexOf(this.curSDType.split(' ')[0] + ' - ' + this.curAvailableHost) ==
+        -1
+      ) {
+        this.availableHosts.push(this.curSDType.split(' ')[0] + ' - ' + this.curAvailableHost)
         this.$store.commit('setAvailableHosts', this.availableHosts)
         this.curAvailableHost = ''
       } else {
@@ -196,10 +196,9 @@ export default {
         })
       }
     },
-    saveMachine(value) {
-      if (this.melody_etcd.machines.indexOf(value) == -1) {
-        this.melody_etcd.machines.push(value)
-
+    saveMachine() {
+      if (this.melody_etcd.machines.indexOf(this.curMachine) == -1) {
+        this.melody_etcd.machines.push(this.curMachine)
         this.curMachine = ''
       } else {
         this.$message({
@@ -233,9 +232,7 @@ export default {
     melody_etcd: {
       handler: function() {
         if (this.etcdEnable) {
-          this.$refs.config.validate().catch(err => {
-            console.log(err)
-          })
+          this.$refs.config.validate()
           this.$store.commit('setExtraConfig', {
             name: 'melody_etcd',
             config: this.melody_etcd,

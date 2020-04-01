@@ -16,8 +16,14 @@
             <div>
               <span class="small_title">1.Allowed hosts</span>
               <el-form-item label="">
-                <el-input placeholder="hostname:port" v-model="curHost" @change="addHostHandle">
-                  <el-button slot="append" type="primary">Add host</el-button>
+                <el-input
+                  placeholder="hostname:port"
+                  v-model="curHost"
+                  @keyup.enter.native="addHostHandle"
+                >
+                  <el-button slot="append" type="primary" @click="addHostHandle">
+                    Add host
+                  </el-button>
                 </el-input>
                 <div v-if="melody_httpsecure.allowed_hosts">
                   <template v-for="(item, index) in melody_httpsecure.allowed_hosts">
@@ -351,11 +357,12 @@ export default {
         this.$store.commit('removeExtraConfig', { name: 'melody_httpsecure' })
       }
     },
-    addHostHandle(value) {
+    addHostHandle() {
       let array = this.melody_httpsecure.allowed_hosts
-      if (array.indexOf(value) == -1) {
-        array.push(value)
+      if (array.indexOf(this.curHost) == -1) {
+        array.push(this.curHost)
         this.melody_httpsecure.allowed_hosts = array
+        this.curHost = ''
       }
     },
     removeHostHandle(index) {

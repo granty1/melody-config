@@ -44,7 +44,7 @@
                   style="margin-top: 10px; margin-bottom: 10px;"
                   v-model="curAvailableHost"
                   placeholder="address"
-                  @change="saveAvailableHosts"
+                  @keyup.enter.native="saveAvailableHosts"
                 >
                   <template slot="prepend">
                     <el-checkbox v-model="disableSanitize">disable sanitize</el-checkbox>
@@ -127,7 +127,7 @@
                   <el-input
                     v-model="curOrigin"
                     placeholder="https://example.com"
-                    @change="saveOrigin"
+                    @keyup.enter.native="saveOrigin"
                   ></el-input>
                   <el-tag
                     v-for="(origin, index) in melody_cors.allow_origins"
@@ -150,7 +150,7 @@
                       <el-input
                         v-model="curAllowHeader"
                         placeholder="Accept-Language"
-                        @change="saveAllowHeader"
+                        @keyup.enter.native="saveAllowHeader"
                       ></el-input>
                       <el-tag
                         v-for="(header, index) in melody_cors.allow_headers"
@@ -179,7 +179,7 @@
                       <el-input
                         v-model="curExposeHeader"
                         placeholder="Accept-Language"
-                        @change="saveExposeHeader"
+                        @keyup.enter.native="saveExposeHeader"
                       ></el-input>
                       <el-tag
                         v-for="(header, index) in melody_cors.expose_headers"
@@ -381,7 +381,7 @@
                       <el-input
                         v-model="curWhitelist"
                         placeholder="MyAndroidClient/1.0"
-                        @change="saveWhitelist"
+                        @keyup.enter.native="saveWhitelist"
                       ></el-input>
                       <el-tag
                         v-for="(white, index) in melody_botdetector.whitelist"
@@ -404,7 +404,7 @@
                       <el-input
                         v-model="curBlacklist"
                         placeholder="axios/0.17.1"
-                        @change="saveBlacklist"
+                        @keyup.enter.native="saveBlacklist"
                       ></el-input>
                       <el-tag
                         v-for="(black, index) in melody_botdetector.blacklist"
@@ -427,7 +427,7 @@
                   <el-input
                     v-model="curPatterns"
                     placeholder="(facebookexternalhit)/.*"
-                    @change="savePatterns"
+                    @keyup.enter.native="savePatterns"
                   ></el-input>
                   <el-tag
                     v-for="(pattern, index) in melody_botdetector.patterns"
@@ -699,9 +699,12 @@ export default {
     MelodyCardItem,
   },
   methods: {
-    saveAvailableHosts(value) {
-      if (this.availableHosts.indexOf(this.curSDType.split(' ')[0] + ' - ' + value) == -1) {
-        this.availableHosts.push(this.curSDType.split(' ')[0] + ' - ' + value)
+    saveAvailableHosts() {
+      if (
+        this.availableHosts.indexOf(this.curSDType.split(' ')[0] + ' - ' + this.curAvailableHost) ==
+        -1
+      ) {
+        this.availableHosts.push(this.curSDType.split(' ')[0] + ' - ' + this.curAvailableHost)
         this.$store.commit('setAvailableHosts', this.availableHosts)
         this.curAvailableHost = ''
       } else {
@@ -710,10 +713,10 @@ export default {
         })
       }
     },
-    saveOrigin(value) {
+    saveOrigin() {
       let origins = this.melody_cors.allow_origins
-      if (origins.indexOf(value) == -1) {
-        origins.push(value)
+      if (origins.indexOf(this.curOrigin) == -1) {
+        origins.push(this.curOrigin)
         this.melody_cors.allow_origins = origins
         this.curOrigin = ''
       } else {
@@ -722,10 +725,10 @@ export default {
         })
       }
     },
-    saveAllowHeader(value) {
+    saveAllowHeader() {
       let headers = this.melody_cors.allow_headers
-      if (headers.indexOf(value) == -1) {
-        headers.push(value)
+      if (headers.indexOf(this.curAllowHeader) == -1) {
+        headers.push(this.curAllowHeader)
         this.melody_cors.allow_headers = headers
         this.curAllowHeader = ''
       } else {
@@ -734,10 +737,10 @@ export default {
         })
       }
     },
-    saveExposeHeader(value) {
+    saveExposeHeader() {
       let headers = this.melody_cors.expose_headers
-      if (headers.indexOf(value) == -1) {
-        headers.push(value)
+      if (headers.indexOf(this.curExposeHeader) == -1) {
+        headers.push(this.curExposeHeader)
         this.melody_cors.expose_headers = headers
         this.curExposeHeader = ''
       } else {
@@ -746,10 +749,10 @@ export default {
         })
       }
     },
-    saveWhitelist(value) {
+    saveWhitelist() {
       let whitelist = this.melody_botdetector.whitelist
-      if (whitelist.indexOf(value) == -1) {
-        whitelist.push(value)
+      if (whitelist.indexOf(this.curWhitelist) == -1) {
+        whitelist.push(this.curWhitelist)
         this.melody_botdetector.whitelist = whitelist
         this.curWhitelist = ''
       } else {
@@ -758,10 +761,10 @@ export default {
         })
       }
     },
-    saveBlacklist(value) {
+    saveBlacklist() {
       let blacklist = this.melody_botdetector.blacklist
-      if (blacklist.indexOf(value) == -1) {
-        blacklist.push(value)
+      if (blacklist.indexOf(this.curBlacklist) == -1) {
+        blacklist.push(this.curBlacklist)
         this.melody_botdetector.blacklist = blacklist
         this.curBlacklist = ''
       } else {
@@ -770,10 +773,10 @@ export default {
         })
       }
     },
-    savePatterns(value) {
+    savePatterns() {
       let patterns = this.melody_botdetector.patterns
-      if (patterns.indexOf(value) == -1) {
-        patterns.push(value)
+      if (patterns.indexOf(this.curPatterns) == -1) {
+        patterns.push(this.curPatterns)
         this.melody_botdetector.patterns = patterns
         this.curPatterns = ''
       } else {
