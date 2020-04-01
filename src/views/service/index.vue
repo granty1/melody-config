@@ -81,16 +81,21 @@
               <el-form-item label="Backend Timeout" prop="timeout">
                 <el-input v-model="config.timeout" placeholder="3000ms"></el-input>
                 <div class="fs12">
-                  与您的后端的所有连接的默认timeout，包括在整个管道中花费的时间。
-                  以后可以在特定endpoint上覆盖此值。
+                  与您的后端的所有连接的默认timeout(从Melody发出请求到收到响应)。
+                  以后可以在具体的endpoint上再覆盖此值。
                 </div>
               </el-form-item>
               <!-- Default Cache TTL -->
               <el-form-item label="Default Cache TTL" prop="cache_ttl">
                 <el-input v-model="config.cache_ttl" placeholder="300s"></el-input>
                 <div class="fs12">
-                  仅适用于GET请求。该服务不会缓存任何内容，但会加快代理的headers进行缓存 (e.g., a
-                  Varnish server)。
+                  请求<code>header</code>会加上
+                  <a
+                    href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Cache-Control"
+                    target="_blank"
+                  >
+                    <code>Cache-Control</code></a
+                  >，此值只对<code>Get</code>请求生效。
                 </div>
               </el-form-item>
             </melody-card-item>
@@ -158,7 +163,13 @@
                         {{ header }}
                       </el-tag>
                       <div class="fs12">
-                        仅允许在此处添加的Header
+                        响应<code>header</code>会加上
+                        <a
+                          href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Allow-Headers"
+                          target="_blank"
+                        >
+                          <code>Access-Control-Allow-Headers</code> </a
+                        >。
                       </div>
                     </el-form-item>
                   </el-col>
@@ -181,7 +192,13 @@
                         {{ header }}
                       </el-tag>
                       <div class="fs12">
-                        可安全显示给CORS API规范的API的Header
+                        响应<code>header</code>会加上
+                        <a
+                          href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers"
+                          target="_blank"
+                        >
+                          <code>Access-Control-Expose-Headers</code> </a
+                        >。
                       </div>
                     </el-form-item>
                   </el-col>
@@ -193,7 +210,13 @@
                     <el-form-item label="Allow credentials">
                       <el-switch v-model="melody_cors.allow_credentials"></el-switch>
                       <div class="fs12">
-                        请求可以包含Cookie，HTTP身份验证或客户端SSL证书等用户凭据
+                        响应<code>header</code>会加上
+                        <a
+                          href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials"
+                          target="_blank"
+                        >
+                          <code>Access-Control-Allow-Credentials</code></a
+                        >。
                       </div>
                     </el-form-item>
                   </el-col>
@@ -202,7 +225,13 @@
                     <el-form-item label="Max age" prop="extra_config.melody_cors.max_age">
                       <el-input v-model="melody_cors.max_age" placeholder="12h"></el-input>
                       <div class="fs12">
-                        响应可以缓存多长时间
+                        响应<code>header</code>会加上
+                        <a
+                          href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Max-Age"
+                          target="_blank"
+                        >
+                          <code>Access-Control-Max-Age</code></a
+                        >。
                       </div>
                     </el-form-item>
                   </el-col>
@@ -270,7 +299,7 @@
                       autocomplete="off"
                     ></el-input>
                     <div class="fs12">
-                      读取整个HTTP请求（包括正文）的最大持续时间。
+                      读取整个HTTP请求（包括body）的最大持续时间。
                     </div>
                   </el-form-item>
                 </el-col>
@@ -444,8 +473,7 @@
                       autocomplete="off"
                     ></el-input>
                     <div class="fs12">
-                      Maximum amount of time an idle (keep-alive) connection will remain idle before
-                      closing itself. Zero means no limit
+                      在keep-alive的情况下，空闲连接在关闭自身之前将保持空闲的最长时间。<code>0</code>表示无限制。
                     </div>
                   </el-form-item>
                 </el-col>
@@ -458,8 +486,7 @@
                       autocomplete="off"
                     ></el-input>
                     <div class="fs12">
-                      Time to wait for a server's response headers after fully writing the request.
-                      This time does not include the time to read the response body.
+                      发送请求后，等待服务器的响应头的时间。该时间不包括读取响应正文的时间。
                     </div>
                   </el-form-item>
                 </el-col>
@@ -472,9 +499,8 @@
                       autocomplete="off"
                     ></el-input>
                     <div class="fs12">
-                      Time to wait for a server's first response headers after fully writing the
-                      request headers if the request has an
-                      <code>"Expect: 100-continue"</code> header. Zero means no timeout
+                      如果在header中存在<code>"Expect: 100-continue"</code>
+                      ，那么这个时间则是在发送请求的header之后等待服务器第一次响应的时间。<code>0</code>表示无限制。
                     </div>
                   </el-form-item>
                 </el-col>
@@ -490,8 +516,8 @@
                       autocomplete="off"
                     ></el-input>
                     <div class="fs12">
-                      Maximum number of idle (keep-alive) connections across all hosts. Zero means
-                      no limit.
+                      所有主机之间的最大空闲（keep-alive）连接数。
+                      <code>0</code>表示无限制。
                     </div>
                   </el-form-item>
                 </el-col>
@@ -507,8 +533,7 @@
                       autocomplete="off"
                     ></el-input>
                     <div class="fs12">
-                      Maximum number of IDLE connections that you allow per-host. Defaults to
-                      <code>250</code>.
+                      每个主机允许的最大空闲连接数。默认为<code>250</code>。
                     </div>
                   </el-form-item>
                 </el-col>
@@ -517,7 +542,7 @@
                   <el-form-item label="Disable Keep-Alives">
                     <el-switch v-model="config.disable_keep_alives"></el-switch>
                     <div class="fs12">
-                      If set prevents re-use of TCP connections between different HTTP request
+                      如果设置，则防止在不同的HTTP请求之间重用TCP连接。
                     </div>
                   </el-form-item>
                 </el-col>
@@ -526,8 +551,8 @@
                   <el-form-item label="Disable Compression">
                     <el-switch v-model="config.disable_compression"></el-switch>
                     <div class="fs12">
-                      If set, prevents the Transport from requesting compression with an
-                      <code>"Accept-Encoding: gzip"</code> request header.
+                      如果设置，则阻止传输请求压缩的带有
+                      <code>"Accept-Encoding: gzip"</code>请求头的请求。
                     </div>
                   </el-form-item>
                 </el-col>
@@ -543,7 +568,7 @@
                       autocomplete="off"
                     ></el-input>
                     <div class="fs12">
-                      Maximum amount of time a dial will wait for a connect to complete
+                      拨号等待连接完成的最长时间。
                     </div>
                   </el-form-item>
                 </el-col>
@@ -556,8 +581,8 @@
                       autocomplete="off"
                     ></el-input>
                     <div class="fs12">
-                      Length of time to wait before spawning a fallback connection. If zero, a
-                      default delay of 300ms is used.
+                      FallbackDelay指定在生成RFC 6555快速后备连接之前要等待的时间。
+                      也就是说，这是在假设IPv6配置错误并退回到IPv4之前等待IPv6成功的时间。如果为零，则使用默认延迟300ms。
                     </div>
                   </el-form-item>
                 </el-col>
@@ -570,8 +595,7 @@
                       autocomplete="off"
                     ></el-input>
                     <div class="fs12">
-                      Keep-alive period for an active network connection. If zero, keep-alives are
-                      not enabled.
+                      TCP心跳检测时间间隔。默认为15s。
                     </div>
                   </el-form-item>
                 </el-col>
