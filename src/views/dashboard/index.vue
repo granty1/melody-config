@@ -11,7 +11,7 @@
           <el-steps :active="cur" align-center finish-status="process">
             <template v-for="(item, index) in stepData">
               <el-step :key="index" :title="item.title">
-                <span class="pointer" slot="description" @mouseenter="setCur(index)">
+                <span class="pointer" slot="description">
                   {{ item.description }}
                 </span>
               </el-step>
@@ -34,8 +34,18 @@ export default {
     TreeChart,
   },
   data() {
+    let serviceConfig = this.$store.getters.serviceConfig
+    let endpointConfig = serviceConfig.endpoints
+    let ind = 0
+    if (endpointConfig && endpointConfig != undefined) {
+      ind = 1
+      if (endpointConfig[0] && endpointConfig[0].backends) {
+        ind = 2
+      }
+    }
+
     return {
-      cur: -1,
+      cur: ind,
       stepData: [
         {
           title: 'Service配置',
