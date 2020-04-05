@@ -241,42 +241,12 @@
         </melody-card-item>
         <melody-card-item title="JWT validation">
           <el-row>
-            <el-col :span="24">
-              <el-form-item label="Backend API calls"
-                ><br />
-                <el-switch
-                  v-model="melody_proxy.sequential"
-                  @change="switchSequential"
-                  active-color="#13ce66"
-                  inactive-color="#ff4949"
-                ></el-switch>
-                <span style="margin-left:20px">启用 sequential proxy(顺序代理)</span>
-                <div class="fs12">
-                  当启用顺序代理时，后端调用可以使用前一次调用的数据。以前调用的数据在{resp0_XXXX}这样的变量中可用，其中0是后端索引，XXXX是属性。E。g:
-                  {resp1_hotel_id}从第二个后端调用中获取字段hotel_id(索引从0开始)。将此变量注入所需的后端端点。
-                </div>
-              </el-form-item>
-            </el-col>
+            开发中~
           </el-row>
         </melody-card-item>
         <melody-card-item title="JWT signing">
           <el-row>
-            <el-col :span="24">
-              <el-form-item label="Backend API calls"
-                ><br />
-                <el-switch
-                  v-model="melody_proxy.sequential"
-                  @change="switchSequential"
-                  active-color="#13ce66"
-                  inactive-color="#ff4949"
-                ></el-switch>
-                <span style="margin-left:20px">启用 sequential proxy(顺序代理)</span>
-                <div class="fs12">
-                  当启用顺序代理时，后端调用可以使用前一次调用的数据。以前调用的数据在{resp0_XXXX}这样的变量中可用，其中0是后端索引，XXXX是属性。E。g:
-                  {resp1_hotel_id}从第二个后端调用中获取字段hotel_id(索引从0开始)。将此变量注入所需的后端端点。
-                </div>
-              </el-form-item>
-            </el-col>
+            开发中~
           </el-row>
         </melody-card-item>
         <melody-card-item title="Backend API calls (where the data comes from)">
@@ -346,12 +316,16 @@
           <el-card :key="i" style="margin-top:20px">
             <div slot="header">
               <span>{{ backend.url_pattern }}</span>
-              <i class="el-icon-close" style="float: right; padding: 3px 4px; margin-left:10px; cursor:pointer" @click="delBackend(i)"
-                ></i
-              >
-              <i class="el-icon-minus" style="float: right; padding: 3px 4px; margin-left:10px; cursor:pointer" @click="smallBackend(i)"
-                ></i
-              >
+              <i
+                class="el-icon-close"
+                style="float: right; padding: 3px 4px; margin-left:10px; cursor:pointer"
+                @click="delBackend(i)"
+              ></i>
+              <i
+                class="el-icon-minus"
+                style="float: right; padding: 3px 4px; margin-left:10px; cursor:pointer"
+                @click="smallBackend(i)"
+              ></i>
             </div>
             <div class="myhidden" :data-acback="i">
               <p class="fs12">availableHosts（可选的主机）</p>
@@ -614,7 +588,7 @@ export default {
     }
   },
   methods: {
-    smallBackend(i){
+    smallBackend(i) {
       var backArr = document.querySelectorAll('[data-acback]')
       backArr[i].classList.toggle('myhidden')
     },
@@ -882,6 +856,6 @@ export default {
   color: white;
 }
 .el-icon-minus:hover {
-    background-color: #d8d6d6;
+  background-color: #d8d6d6;
 }
 </style>
