@@ -172,10 +172,6 @@ a span {
   color: #4e6e8e;
 }
 
-.main {
-  min-height: 700px;
-}
-
 .save_button {
   float: right;
   color: #2c3e50;

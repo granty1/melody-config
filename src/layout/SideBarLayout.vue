@@ -169,8 +169,14 @@ export default {
 
 <style lang="scss" scoped>
 .aside {
-  min-height: 700px;
+  border-right: solid 1px #e6e6e6;
   height: 100%;
+}
+.el-aside {
+  border-right: solid 1px #e6e6e6;
+}
+.el-menu {
+  border-right: 0px;
 }
 
 .myspan {

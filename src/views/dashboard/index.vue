@@ -2,7 +2,7 @@
   <div>
     <el-row>
       <!-- 预览 -->
-      <el-card :body-style="{ height: '120px', padding: '50px' }" class="box-card item">
+      <el-card :body-style="{ height: '150px', padding: '50px' }" class="box-card item mycard">
         <div style="font-size: 12px; margin-bottom: 30px; margin-left: 40px">
           嗨，感谢您使用Melody
           Configer。该应用程序创建Melody服务加载的配置。为了正确配置服务，请至少执行以下步骤：
@@ -19,14 +19,20 @@
           </el-steps>
         </el-col>
       </el-card>
-      <el-card class="box-card item"></el-card>
+      <el-card class="box-card item mycard" style="max-height:400px;">
+        <TreeChart :json="treeData" style="margin: 0 auto;" />
+      </el-card>
     </el-row>
   </div>
 </template>
 
 <script>
+import TreeChart from 'vue-tree-chart'
 export default {
   name: 'Dashboard',
+  components: {
+    TreeChart,
+  },
   data() {
     return {
       cur: -1,
@@ -52,6 +58,36 @@ export default {
           description: '导出配置文件，供Melody服务启用',
         },
       ],
+      treeData: {
+        name: 'Melody Config',
+        children: [
+          {
+            name: 'endpoint 结构',
+            children: [
+              {
+                name: '/endpoint_1',
+              },
+              {
+                name: '/endpoint_2',
+                children: [
+                  {
+                    name: '/backend_1',
+                  },
+                  {
+                    name: '/backend_1',
+                  },
+                  {
+                    name: '/backend_1',
+                  },
+                ],
+              },
+              {
+                name: '/endpoint_3',
+              },
+            ],
+          },
+        ],
+      },
     }
   },
   methods: {
@@ -63,4 +99,17 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.avat {
+  display: none !important;
+}
+.person {
+  background-color: #dadada;
+  border-radius: 5px;
+  width: 80% !important;
+}
+.mycard {
+  overflow: auto;
+  overflow-y: hidden;
+}
+</style>
