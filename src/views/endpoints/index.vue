@@ -239,6 +239,46 @@
             </el-col>
           </el-row>
         </melody-card-item>
+        <melody-card-item title="JWT validation">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="Backend API calls"
+                ><br />
+                <el-switch
+                  v-model="melody_proxy.sequential"
+                  @change="switchSequential"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                ></el-switch>
+                <span style="margin-left:20px">启用 sequential proxy(顺序代理)</span>
+                <div class="fs12">
+                  当启用顺序代理时，后端调用可以使用前一次调用的数据。以前调用的数据在{resp0_XXXX}这样的变量中可用，其中0是后端索引，XXXX是属性。E。g:
+                  {resp1_hotel_id}从第二个后端调用中获取字段hotel_id(索引从0开始)。将此变量注入所需的后端端点。
+                </div>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </melody-card-item>
+        <melody-card-item title="JWT signing">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="Backend API calls"
+                ><br />
+                <el-switch
+                  v-model="melody_proxy.sequential"
+                  @change="switchSequential"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                ></el-switch>
+                <span style="margin-left:20px">启用 sequential proxy(顺序代理)</span>
+                <div class="fs12">
+                  当启用顺序代理时，后端调用可以使用前一次调用的数据。以前调用的数据在{resp0_XXXX}这样的变量中可用，其中0是后端索引，XXXX是属性。E。g:
+                  {resp1_hotel_id}从第二个后端调用中获取字段hotel_id(索引从0开始)。将此变量注入所需的后端端点。
+                </div>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </melody-card-item>
         <melody-card-item title="Backend API calls (where the data comes from)">
           <el-row>
             <el-col :span="24">
@@ -306,187 +346,192 @@
           <el-card :key="i" style="margin-top:20px">
             <div slot="header">
               <span>{{ backend.url_pattern }}</span>
-              <el-button style="float: right; padding: 3px 0" type="text" @click="delBackend(i)"
-                >删除</el-button
+              <i class="el-icon-close" style="float: right; padding: 3px 4px; margin-left:10px; cursor:pointer" @click="delBackend(i)"
+                ></i
+              >
+              <i class="el-icon-minus" style="float: right; padding: 3px 4px; margin-left:10px; cursor:pointer" @click="smallBackend(i)"
+                ></i
               >
             </div>
-            <p class="fs12">availableHosts（可选的主机）</p>
-            <el-row>
-              <el-form-item label="">
-                <template>
-                  <el-checkbox-group v-model="backend.host">
-                    <el-checkbox
-                      v-for="(j, index) in availableHosts"
-                      :key="index"
-                      :label="splitHost(j)"
-                    ></el-checkbox>
-                  </el-checkbox-group>
+            <div class="myhidden" :data-acback="i">
+              <p class="fs12">availableHosts（可选的主机）</p>
+              <el-row>
+                <el-form-item label="">
+                  <template>
+                    <el-checkbox-group v-model="backend.host">
+                      <el-checkbox
+                        v-for="(j, index) in availableHosts"
+                        :key="index"
+                        :label="splitHost(j)"
+                      ></el-checkbox>
+                    </el-checkbox-group>
+                  </template>
+                  <div class="fs12">所有的后端可以用来满足这个请求，平衡使用轮询。</div>
+                </el-form-item> </el-row
+              ><br />
+              <el-row :gutter="24">
+                <el-col :span="16">
+                  <el-form-item label="Backend endpoint">
+                    <el-input
+                      placeholder="输入地址"
+                      suffix-icon="el-icon-edit"
+                      v-model="backend.url_pattern"
+                    ></el-input>
+                    <div class="fs12">
+                      这是您要查询的后端服务器的端点。必须以斜线开头。同时你也可以使用{parameters}的形式传递参数。
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="HTTP Verb" style="float:left">
+                    <el-select v-model="backend.method" placeholder="请选择">
+                      <el-option
+                        v-for="item in methods"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      ></el-option>
+                    </el-select>
+                    <div class="fs12">
+                      HTTP请求方法
+                    </div>
+                  </el-form-item>
+                  <el-form-item label="encoding" style="float:left;margin-left:20px">
+                    <el-select v-model="backend.encoding" placeholder="请选择">
+                      <el-option
+                        v-for="item in outputs"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      ></el-option>
+                    </el-select>
+                    <div class="fs12">
+                      请求数据的编码格式
+                    </div>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row :gutter="24">
+                <el-col :span="12">
+                  <el-form-item label="黑名单">
+                    <el-input
+                      clearable
+                      placeholder="Blacklist"
+                      @keyup.enter.native="addBackendBlacklist(backend)"
+                      v-model="black"
+                    >
+                      <el-button slot="append" @click="addBackendBlacklist(backend)" type="primary"
+                        >Add Blacklist</el-button
+                      >
+                    </el-input>
+                    <div v-if="backend.blacklist">
+                      <template v-for="(item, index) in backend.blacklist">
+                        <el-tag
+                          type="info"
+                          :style="index == 0 ? {} : { 'margin-left': '10px' }"
+                          :key="index"
+                          closable
+                          :disable-transitions="false"
+                          @close="removeBackendBlacklist(backend, index)"
+                          >{{ item }}</el-tag
+                        >
+                      </template>
+                    </div>
+                    <div style="font-size: 12px">
+                      <p>您不会从响应中选择的属性。</p>
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="白名单">
+                    <el-input
+                      clearable
+                      placeholder="Whitelist"
+                      @keyup.enter.native="addBackendWhitelist(backend)"
+                      v-model="white"
+                    >
+                      <el-button slot="append" @click="addBackendWhitelist(backend)" type="primary"
+                        >Add whitelist</el-button
+                      >
+                    </el-input>
+                    <div v-if="backend.whitelist">
+                      <template v-for="(item, index) in backend.whitelist">
+                        <el-tag
+                          type="info"
+                          :style="index == 0 ? {} : { 'margin-left': '10px' }"
+                          :key="index"
+                          closable
+                          :disable-transitions="false"
+                          @close="removeBackendWhitelist(backend, index)"
+                          >{{ item }}</el-tag
+                        >
+                      </template>
+                    </div>
+                    <div style="font-size: 12px">
+                      您将从响应中选择的属性。
+                    </div>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row :gutter="24">
+                <el-col :span="16">
+                  <el-form-item label="Capturing group">
+                    <el-input
+                      placeholder="my-group"
+                      suffix-icon="el-icon-edit"
+                      v-model="backend.group"
+                    ></el-input>
+                    <div class="fs12">
+                      只有在希望捕获所有响应并将其封装在属性名中时才填充。
+                    </div>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <p class="fs12">Renaming</p>
+              <el-row :gutter="24">
+                <el-col :span="6">
+                  <el-form-item label="">
+                    <el-input
+                      placeholder="Original object"
+                      suffix-icon="el-icon-edit"
+                      v-model="back.o"
+                    ></el-input>
+                    <div class="fs12">
+                      Original object
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="">
+                    <el-input
+                      placeholder="Renamed object"
+                      suffix-icon="el-icon-edit"
+                      v-model="back.r"
+                    ></el-input>
+                    <div class="fs12">
+                      Renamed object
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="">
+                    <el-button type="primary" @click="addMapping(backend)">添加</el-button>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <div v-if="backend.mapping">
+                <template v-for="(item, index) in backend.mapping">
+                  <el-tag
+                    type="info"
+                    :style="index == 0 ? {} : { 'margin-left': '10px' }"
+                    :key="index"
+                    closable
+                    :disable-transitions="false"
+                    @close="removeMapping(backend, index)"
+                    >{{ index }} -> {{ item }}</el-tag
+                  >
                 </template>
-                <div class="fs12">所有的后端可以用来满足这个请求，平衡使用轮询。</div>
-              </el-form-item> </el-row
-            ><br />
-            <el-row :gutter="24">
-              <el-col :span="16">
-                <el-form-item label="Backend endpoint">
-                  <el-input
-                    placeholder="输入地址"
-                    suffix-icon="el-icon-edit"
-                    v-model="backend.url_pattern"
-                  ></el-input>
-                  <div class="fs12">
-                    这是您要查询的后端服务器的端点。必须以斜线开头。同时你也可以使用{parameters}的形式传递参数。
-                  </div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="HTTP Verb" style="float:left">
-                  <el-select v-model="backend.method" placeholder="请选择">
-                    <el-option
-                      v-for="item in methods"
-                      :key="item"
-                      :label="item"
-                      :value="item"
-                    ></el-option>
-                  </el-select>
-                  <div class="fs12">
-                    HTTP请求方法
-                  </div>
-                </el-form-item>
-                <el-form-item label="encoding" style="float:left;margin-left:20px">
-                  <el-select v-model="backend.encoding" placeholder="请选择">
-                    <el-option
-                      v-for="item in outputs"
-                      :key="item"
-                      :label="item"
-                      :value="item"
-                    ></el-option>
-                  </el-select>
-                  <div class="fs12">
-                    请求数据的编码格式
-                  </div>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="24">
-              <el-col :span="12">
-                <el-form-item label="黑名单">
-                  <el-input
-                    clearable
-                    placeholder="Blacklist"
-                    @keyup.enter.native="addBackendBlacklist(backend)"
-                    v-model="black"
-                  >
-                    <el-button slot="append" @click="addBackendBlacklist(backend)" type="primary"
-                      >Add Blacklist</el-button
-                    >
-                  </el-input>
-                  <div v-if="backend.blacklist">
-                    <template v-for="(item, index) in backend.blacklist">
-                      <el-tag
-                        type="info"
-                        :style="index == 0 ? {} : { 'margin-left': '10px' }"
-                        :key="index"
-                        closable
-                        :disable-transitions="false"
-                        @close="removeBackendBlacklist(backend, index)"
-                        >{{ item }}</el-tag
-                      >
-                    </template>
-                  </div>
-                  <div style="font-size: 12px">
-                    <p>您不会从响应中选择的属性。</p>
-                  </div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="白名单">
-                  <el-input
-                    clearable
-                    placeholder="Whitelist"
-                    @keyup.enter.native="addBackendWhitelist(backend)"
-                    v-model="white"
-                  >
-                    <el-button slot="append" @click="addBackendWhitelist(backend)" type="primary"
-                      >Add whitelist</el-button
-                    >
-                  </el-input>
-                  <div v-if="backend.whitelist">
-                    <template v-for="(item, index) in backend.whitelist">
-                      <el-tag
-                        type="info"
-                        :style="index == 0 ? {} : { 'margin-left': '10px' }"
-                        :key="index"
-                        closable
-                        :disable-transitions="false"
-                        @close="removeBackendWhitelist(backend, index)"
-                        >{{ item }}</el-tag
-                      >
-                    </template>
-                  </div>
-                  <div style="font-size: 12px">
-                    您将从响应中选择的属性。
-                  </div>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="24">
-              <el-col :span="16">
-                <el-form-item label="Capturing group">
-                  <el-input
-                    placeholder="my-group"
-                    suffix-icon="el-icon-edit"
-                    v-model="backend.group"
-                  ></el-input>
-                  <div class="fs12">
-                    只有在希望捕获所有响应并将其封装在属性名中时才填充。
-                  </div>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <p class="fs12">Renaming</p>
-            <el-row :gutter="24">
-              <el-col :span="6">
-                <el-form-item label="">
-                  <el-input
-                    placeholder="Original object"
-                    suffix-icon="el-icon-edit"
-                    v-model="back.o"
-                  ></el-input>
-                  <div class="fs12">
-                    Original object
-                  </div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="">
-                  <el-input
-                    placeholder="Renamed object"
-                    suffix-icon="el-icon-edit"
-                    v-model="back.r"
-                  ></el-input>
-                  <div class="fs12">
-                    Renamed object
-                  </div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="">
-                  <el-button type="primary" @click="addMapping(backend)">添加</el-button>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <div v-if="backend.mapping">
-              <template v-for="(item, index) in backend.mapping">
-                <el-tag
-                  type="info"
-                  :style="index == 0 ? {} : { 'margin-left': '10px' }"
-                  :key="index"
-                  closable
-                  :disable-transitions="false"
-                  @close="removeMapping(backend, index)"
-                  >{{ index }} -> {{ item }}</el-tag
-                >
-              </template>
+              </div>
             </div>
           </el-card>
         </template>
@@ -569,6 +614,10 @@ export default {
     }
   },
   methods: {
+    smallBackend(i){
+      var backArr = document.querySelectorAll('[data-acback]')
+      backArr[i].classList.toggle('myhidden')
+    },
     addParameterHandle() {
       if (this.curendpoint['querystring_params'] === undefined) {
         this.curendpoint['querystring_params'] = []
@@ -827,5 +876,12 @@ export default {
 }
 .myhidden {
   display: none;
+}
+.el-icon-close:hover {
+  background-color: red;
+  color: white;
+}
+.el-icon-minus:hover {
+    background-color: #d8d6d6;
 }
 </style>
