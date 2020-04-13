@@ -315,7 +315,7 @@
         <template v-for="(backend, i) in curendpoint.backends">
           <el-card :key="i" style="margin-top:20px">
             <div slot="header">
-              <span>{{ backend.url_pattern }}</span>
+              <span @click="smallBackend(i)">{{ backend.url_pattern }}</span>
               <i
                 class="el-icon-close"
                 style="float: right; padding: 3px 4px; margin-left:10px; cursor:pointer"
@@ -448,7 +448,7 @@
                 </el-col>
               </el-row>
               <el-row :gutter="24">
-                <el-col :span="16">
+                <el-col :span="12">
                   <el-form-item label="Capturing group">
                     <el-input
                       placeholder="my-group"
@@ -457,6 +457,34 @@
                     ></el-input>
                     <div class="fs12">
                       只有在希望捕获所有响应并将其封装在属性名中时才填充。
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="Root object">
+                    <el-input
+                      placeholder="target"
+                      suffix-icon="el-icon-edit"
+                      v-model="backend.target"
+                      :disabled="backend.is_collection"
+                    ></el-input>
+                    <div class="fs12">
+                      一些api返回封装在根对象(通常命名为data、response、items)中的所有内容。在这里指定一个根对象将把它的所有子对象放在第一层。在操作数据时，只有其子数据是可见的。
+                    </div>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row :gutter="24">
+                <el-col :span="24">
+                  <el-form-item label="Non-object response"><br/>
+                    <el-switch
+                      v-model="backend.is_collection"
+                      active-color="#13ce66"
+                      @change="switchNonObject(backend)"
+                      inactive-color="#ff4949">
+                    </el-switch>     是否开启
+                    <div class="fs12">
+                      将响应视为一个集合，而不是对象。Melody期望返回的内容封装在一个对象中(在json中，e。g: {"status":"OK"}但是如果后端返回一个集合(e。g: ["a"， "b"])选中这个选项。集合将在集合属性中返回。使用下面的重命名将其重命名为任何其他名称。
                     </div>
                   </el-form-item>
                 </el-col>
@@ -545,7 +573,7 @@ export default {
       curendpoint: serviceConfig.endpoints[this.$route.params.url * 1],
       isEndpointsNone: false,
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
-      outputs: ['JSON', 'Negotiate content', 'String(text/plain)', 'No-op'],
+      outputs: ['JSON', 'XML', 'RSS', 'String', 'No-op'],
       StaticResponseS: ['Always', 'Success', 'Errored', 'Incomplete'],
       endCfg: {
         curParameter: '',
@@ -673,6 +701,12 @@ export default {
           delete this.melody_ratelimit_router['key']
         }
       }
+    },
+    switchNonObject(backend){
+      if(backend.is_collection === true){
+        backend.target = ''
+      }
+
     },
     addBackendWhitelist(backend) {
       if (backend != undefined) {

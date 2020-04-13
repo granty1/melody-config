@@ -8,6 +8,7 @@ class Backend {
     this.blacklist = []
     this.whitelist = []
     this.mapping = {}
+    this.is_collection = false
   }
 }
 

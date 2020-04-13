@@ -57,6 +57,7 @@ export default {
         if (this.$ls.get('config')) {
           this.$confirm('导入会覆盖已存在的配置，是否继续？').then(() => {
             this.melodyJSON = JSON.parse(reader.result)
+            this.parseHostInJSON(this.melodyJSON)
             this.$store.commit('updateServiceConfig', this.melodyJSON)
           })
         } else {
@@ -65,6 +66,11 @@ export default {
         }
       }
     },
+    parseHostInJSON(melodyJSON){
+      for(let v in melodyJSON){
+        console.log(v)
+      }
+    }
   },
   mounted() {
     if (this.$ls.get('config')) {
