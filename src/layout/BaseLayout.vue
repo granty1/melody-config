@@ -109,8 +109,7 @@ export default {
               : this.$ls.get('active_cards')
           this.$store.commit('updateActiveCards', activeCards)
 
-          let availableHosts =
-            this.$ls.get('availableHosts') === null ? [] : this.$ls.get('availableHosts')
+          let availableHosts = []
           this.$store.commit('setAvailableHosts', availableHosts)
           this.$router.push('/')
 

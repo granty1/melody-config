@@ -66,11 +66,34 @@ export default {
         }
       }
     },
-    parseHostInJSON(melodyJSON){
-      for(let v in melodyJSON){
-        console.log(v)
+    parseHostInJSON(melodyJSON) {
+      let endCfg = melodyJSON.endpoints
+      let sdHost = []
+      for (let v in endCfg) {
+        let endCfgitem = endCfg[v]
+        for (let ev in endCfgitem) {
+          if (ev === 'backends') {
+            let backendcfgs = endCfgitem[ev]
+            for (let bv in backendcfgs) {
+              let backCfg = backendcfgs[bv]
+              for (let hosti in backCfg.host) {
+                let temp = ''
+                if (backCfg.sd === undefined || backCfg.sd === '') {
+                  temp = 'static - ' + backCfg.host[hosti]
+                } else {
+                  temp = backCfg.sd + ' - ' + backCfg.host[hosti]
+                }
+                if (sdHost.indexOf(temp) === -1) {
+                  sdHost.push(temp)
+                }
+              }
+            }
+          }
+        }
       }
-    }
+
+      this.$store.commit('setAvailableHosts', sdHost)
+    },
   },
   mounted() {
     if (this.$ls.get('config')) {

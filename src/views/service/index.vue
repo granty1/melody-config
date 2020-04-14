@@ -644,7 +644,7 @@ export default {
 
       etcdDisabled: serviceConfig.extra_config.melody_etcd == undefined,
       disableSanitize: false,
-      curSDType: 'Static address resolution',
+      curSDType: 'static address resolution',
       curAvailableHost: '',
       availableHosts: this.$store.getters.availableHosts,
 

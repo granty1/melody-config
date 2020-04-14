@@ -328,15 +328,31 @@
               ></i>
             </div>
             <div class="myhidden" :data-acback="i">
-              <p class="fs12">availableHosts（可选的主机）</p>
               <el-row>
-                <el-form-item label="">
+                <el-form-item :data-m="setSD(backend)" label="Host resolution（主机类型选择）"
+                  ><br />
+                  <template>
+                    <el-radio
+                      v-for="(hostJ, hostIndex) in hostResolution"
+                      :key="hostIndex"
+                      v-model="backend.sd"
+                      :label="hostJ"
+                      >{{ hostJ }}</el-radio
+                    >
+                  </template>
+                  <br />
+                  <div class="fs12">已配置的服务发现选项。</div>
+                </el-form-item>
+              </el-row>
+              <el-row>
+                <el-form-item label="availableHosts（可选的主机）"
+                  ><br />
                   <template>
                     <el-checkbox-group v-model="backend.host">
                       <el-checkbox
-                        v-for="(j, index) in availableHosts"
+                        v-for="(j, index) in availableHosts[backend.sd]"
                         :key="index"
-                        :label="splitHost(j)"
+                        :label="j"
                       ></el-checkbox>
                     </el-checkbox-group>
                   </template>
@@ -476,15 +492,20 @@
               </el-row>
               <el-row :gutter="24">
                 <el-col :span="24">
-                  <el-form-item label="Non-object response"><br/>
+                  <el-form-item label="Non-object response"
+                    ><br />
                     <el-switch
                       v-model="backend.is_collection"
                       active-color="#13ce66"
                       @change="switchNonObject(backend)"
-                      inactive-color="#ff4949">
-                    </el-switch>     是否开启
+                      inactive-color="#ff4949"
+                    >
+                    </el-switch>
+                    是否开启
                     <div class="fs12">
-                      将响应视为一个集合，而不是对象。Melody期望返回的内容封装在一个对象中(在json中，e。g: {"status":"OK"}但是如果后端返回一个集合(e。g: ["a"， "b"])选中这个选项。集合将在集合属性中返回。使用下面的重命名将其重命名为任何其他名称。
+                      将响应视为一个集合，而不是对象。Melody期望返回的内容封装在一个对象中(在json中，e。g:
+                      {"status":"OK"}但是如果后端返回一个集合(e。g: ["a"，
+                      "b"])选中这个选项。集合将在集合属性中返回。使用下面的重命名将其重命名为任何其他名称。
                     </div>
                   </el-form-item>
                 </el-col>
@@ -567,6 +588,25 @@ export default {
   data() {
     let serviceConfig = this.$store.getters.serviceConfig
     let cp = serviceConfig.endpoints[this.$route.params.url * 1]
+    let sdHost = this.$store.getters.availableHosts
+    let sdHead = []
+    let sdmap = {}
+    if (sdHost && sdHost !== undefined) {
+      for (let v in sdHost) {
+        let h = sdHost[v].split(' - ')[0]
+        let hv = sdHost[v].split(' - ')[1]
+        if (sdmap[h] === undefined) {
+          sdmap[h] = []
+          sdmap[h].push(hv)
+        } else {
+          sdmap[h].push(hv)
+        }
+        if (sdHead.indexOf(h) === -1) {
+          sdHead.push(h)
+        }
+      }
+    }
+
     return {
       config: serviceConfig,
       endpoints: serviceConfig.endpoints,
@@ -605,7 +645,8 @@ export default {
             }
           : cp.extra_config.melody_ratelimit_router,
 
-      availableHosts: this.$store.getters.availableHosts,
+      hostResolution: sdHead,
+      availableHosts: sdmap,
       checkHosts: [],
       black: '',
       white: '',
@@ -702,11 +743,10 @@ export default {
         }
       }
     },
-    switchNonObject(backend){
-      if(backend.is_collection === true){
+    switchNonObject(backend) {
+      if (backend.is_collection === true) {
         backend.target = ''
       }
-
     },
     addBackendWhitelist(backend) {
       if (backend != undefined) {
@@ -746,6 +786,12 @@ export default {
     },
     delBackend(i) {
       this.curendpoint.backends.splice(i, 1)
+    },
+    setSD(b) {
+      if (b['sd'] === '' || b['sd'] === undefined) {
+        b['sd'] = 'static'
+      }
+      return b['sd']
     },
   },
   computed: {

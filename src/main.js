@@ -21,7 +21,6 @@ Vue.config.productionTip = false
 //     loadingInstance.close()
 //   },500)
 
- 
 // })
 
 new Vue({
