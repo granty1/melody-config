@@ -27,7 +27,7 @@
                   在此处添加Melody用于检索数据的所有地址，以及是否由服务发现解决的地址：
                 </div>
                 <el-radio-group v-model="curSDType" size="small">
-                  <el-radio-button label="Static address resolution">
+                  <el-radio-button label="static address resolution">
                     Static address resolution
                   </el-radio-button>
                   <el-radio-button label="Etcd" :disabled="etcdDisabled">

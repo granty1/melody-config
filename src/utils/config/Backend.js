@@ -9,6 +9,7 @@ class Backend {
     this.whitelist = []
     this.mapping = {}
     this.is_collection = false
+    this.disable_host_sanitize = false
   }
 }
 

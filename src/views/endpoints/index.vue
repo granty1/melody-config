@@ -341,7 +341,6 @@
                       >{{ hostJ }}</el-radio
                     >
                   </template>
-                  <br />
                   <div class="fs12">已配置的服务发现选项。</div>
                 </el-form-item>
               </el-row>
@@ -358,8 +357,21 @@
                     </el-checkbox-group>
                   </template>
                   <div class="fs12">所有的后端可以用来满足这个请求，平衡使用轮询。</div>
-                </el-form-item> </el-row
-              ><br />
+                </el-form-item>
+              </el-row>
+              <el-row>
+                <el-form-item label="Disable host sanitization"
+                  ><br />
+                  <el-switch
+                    v-model="backend.disable_host_sanitize"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949"
+                  >
+                  </el-switch>
+                  是否开启
+                  <div class="fs12">检查地址何时不需要验证协议。如果不确定，则保留建议的值。</div>
+                </el-form-item>
+              </el-row>
               <el-row :gutter="24">
                 <el-col :span="16">
                   <el-form-item label="Backend endpoint">
@@ -792,6 +804,7 @@ export default {
       if (b.sd === undefined || b.sd === '') {
         b.sd = 'static'
       }
+      b.host = []
       return b.sd
     },
   },
