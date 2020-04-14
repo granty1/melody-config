@@ -329,10 +329,11 @@
             </div>
             <div class="myhidden" :data-acback="i">
               <el-row>
-                <el-form-item :data-m="setSD(backend)" label="Host resolution（主机类型选择）"
+                <el-form-item label="Host resolution（主机类型选择）"
                   ><br />
                   <template>
                     <el-radio
+                      @change="setSD(backend)"
                       v-for="(hostJ, hostIndex) in hostResolution"
                       :key="hostIndex"
                       v-model="backend.sd"
@@ -788,10 +789,10 @@ export default {
       this.curendpoint.backends.splice(i, 1)
     },
     setSD(b) {
-      if (b['sd'] === '' || b['sd'] === undefined) {
-        b['sd'] = 'static'
+      if (b.sd === undefined || b.sd === '') {
+        b.sd = 'static'
       }
-      return b['sd']
+      return b.sd
     },
   },
   computed: {
