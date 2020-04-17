@@ -18,7 +18,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="Method" style="float:left">
+              <el-form-item label="Method" style="float:left;width:47%">
                 <el-select v-model="curendpoint.method" placeholder="请选择">
                   <el-option
                     v-for="item in methods"
@@ -31,7 +31,7 @@
                   HTTP请求方法
                 </div>
               </el-form-item>
-              <el-form-item label="Output" style="float:left;margin-left:20px">
+              <el-form-item label="Output" style="float:left;margin-left:20px;width:47%">
                 <el-select v-model="curendpoint.output_encoding" placeholder="请选择">
                   <el-option
                     v-for="item in outputs"
@@ -386,7 +386,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="8">
-                  <el-form-item label="HTTP Verb" style="float:left">
+                  <el-form-item label="HTTP Verb" style="float:left;width:47%">
                     <el-select v-model="backend.method" placeholder="请选择">
                       <el-option
                         v-for="item in methods"
@@ -399,7 +399,7 @@
                       HTTP请求方法
                     </div>
                   </el-form-item>
-                  <el-form-item label="encoding" style="float:left;margin-left:20px">
+                  <el-form-item label="encoding" style="float:left;margin-left:20px;width:47%">
                     <el-select v-model="backend.encoding" placeholder="请选择">
                       <el-option
                         v-for="item in outputs"
