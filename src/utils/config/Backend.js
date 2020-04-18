@@ -2,7 +2,9 @@ class Backend {
   constructor() {
     this.url_pattern = '/new-point'
     this.method = 'GET'
-    this.extra_config = {}
+    this.extra_config = {
+      melody_ratelimit_proxy: {},
+    }
     this.host = []
     this.encoding = 'json'
     this.blacklist = []

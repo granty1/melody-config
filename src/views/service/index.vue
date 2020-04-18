@@ -369,7 +369,7 @@
 
           <melody-card>
             <!-- Bot detector -->
-            <melody-card-item title="Bot detector">
+            <melody-card-item title="Bot monitor">
               <el-form-item>
                 <el-switch v-model="openBotDetector" @change="swtichBotDetector"></el-switch>
               </el-form-item>
@@ -384,7 +384,7 @@
                         @keyup.enter.native="saveWhitelist"
                       ></el-input>
                       <el-tag
-                        v-for="(white, index) in melody_botdetector.whitelist"
+                        v-for="(white, index) in melody_botmonitor.whitelist"
                         :key="index"
                         closable
                         type="info"
@@ -407,7 +407,7 @@
                         @keyup.enter.native="saveBlacklist"
                       ></el-input>
                       <el-tag
-                        v-for="(black, index) in melody_botdetector.blacklist"
+                        v-for="(black, index) in melody_botmonitor.blacklist"
                         :key="index"
                         closable
                         type="info"
@@ -430,7 +430,7 @@
                     @keyup.enter.native="savePatterns"
                   ></el-input>
                   <el-tag
-                    v-for="(pattern, index) in melody_botdetector.patterns"
+                    v-for="(pattern, index) in melody_botmonitor.patterns"
                     :key="index"
                     closable
                     type="info"
@@ -445,7 +445,7 @@
                 </el-form-item>
                 <!-- Cache size -->
                 <el-form-item label="Cache size">
-                  <el-input-number v-model="melody_botdetector.cacheSize"></el-input-number>
+                  <el-input-number v-model="melody_botmonitor.cacheSize"></el-input-number>
                   <div class="fs12">
                     缓存用户代理的数量，以加快检测的速度。使用0表示不缓存。
                   </div>
@@ -656,7 +656,7 @@ export default {
 
       openEnableHTTPS: serviceConfig.tls !== undefined,
       openCORS: serviceConfig.extra_config.melody_cors !== undefined,
-      openBotDetector: serviceConfig.extra_config.melody_botdetector !== undefined,
+      openBotDetector: serviceConfig.extra_config.melody_botmonitor !== undefined,
 
       curOrigin: '',
       curAllowHeader: '',
@@ -683,15 +683,15 @@ export default {
               allow_credentials: false,
             }
           : serviceConfig.extra_config.melody_cors,
-      melody_botdetector:
-        serviceConfig.extra_config.melody_botdetector == undefined
+      melody_botmonitor:
+        serviceConfig.extra_config.melody_botmonitor == undefined
           ? {
               cacheSize: 0,
               whitelist: [],
               blacklist: [],
               patterns: [],
             }
-          : serviceConfig.extra_config.melody_botdetector,
+          : serviceConfig.extra_config.melody_botmonitor,
     }
   },
   components: {
@@ -750,10 +750,10 @@ export default {
       }
     },
     saveWhitelist() {
-      let whitelist = this.melody_botdetector.whitelist
+      let whitelist = this.melody_botmonitor.whitelist
       if (whitelist.indexOf(this.curWhitelist) == -1) {
         whitelist.push(this.curWhitelist)
-        this.melody_botdetector.whitelist = whitelist
+        this.melody_botmonitor.whitelist = whitelist
         this.curWhitelist = ''
       } else {
         this.$message({
@@ -762,10 +762,10 @@ export default {
       }
     },
     saveBlacklist() {
-      let blacklist = this.melody_botdetector.blacklist
+      let blacklist = this.melody_botmonitor.blacklist
       if (blacklist.indexOf(this.curBlacklist) == -1) {
         blacklist.push(this.curBlacklist)
-        this.melody_botdetector.blacklist = blacklist
+        this.melody_botmonitor.blacklist = blacklist
         this.curBlacklist = ''
       } else {
         this.$message({
@@ -774,10 +774,10 @@ export default {
       }
     },
     savePatterns() {
-      let patterns = this.melody_botdetector.patterns
+      let patterns = this.melody_botmonitor.patterns
       if (patterns.indexOf(this.curPatterns) == -1) {
         patterns.push(this.curPatterns)
-        this.melody_botdetector.patterns = patterns
+        this.melody_botmonitor.patterns = patterns
         this.curPatterns = ''
       } else {
         this.$message({
@@ -799,13 +799,13 @@ export default {
       this.melody_cors.expose_headers.splice(this.melody_cors.expose_headers.indexOf(value), 1)
     },
     handleWhitelistTagClose(value) {
-      this.melody_botdetector.whitelist.splice(this.melody_botdetector.whitelist.indexOf(value), 1)
+      this.melody_botmonitor.whitelist.splice(this.melody_botmonitor.whitelist.indexOf(value), 1)
     },
     handleBlacklistTagClose(value) {
-      this.melody_botdetector.blacklist.splice(this.melody_botdetector.blacklist.indexOf(value), 1)
+      this.melody_botmonitor.blacklist.splice(this.melody_botmonitor.blacklist.indexOf(value), 1)
     },
     handlePatternsTagClose(value) {
-      this.melody_botdetector.patterns.splice(this.melody_botdetector.patterns.indexOf(value), 1)
+      this.melody_botmonitor.patterns.splice(this.melody_botmonitor.patterns.indexOf(value), 1)
     },
     swtichEnableHTTPS(enable) {
       if (enable) {
@@ -827,11 +827,11 @@ export default {
     swtichBotDetector(enable) {
       if (enable) {
         this.$store.commit('setExtraConfig', {
-          name: 'melody_botdetector',
-          config: this.melody_botdetector,
+          name: 'melody_botmonitor',
+          config: this.melody_botmonitor,
         })
       } else {
-        this.$store.commit('removeExtraConfig', { name: 'melody_botdetector' })
+        this.$store.commit('removeExtraConfig', { name: 'melody_botmonitor' })
       }
     },
   },
@@ -870,11 +870,11 @@ export default {
       },
       deep: true,
     },
-    melody_botdetector: {
+    melody_botmonitor: {
       handler: function() {
         this.$store.commit('setExtraConfig', {
-          name: 'melody_botdetector',
-          config: this.melody_botdetector,
+          name: 'melody_botmonitor',
+          config: this.melody_botmonitor,
         })
       },
       deep: true,
