@@ -671,48 +671,6 @@
             </el-col>
           </el-row>
         </melody-card-item>
-        <!-- 静态响应 -->
-        <melody-card-item title="Static Response">
-          <!-- <el-row>
-            <el-col :span="24">
-              <el-form-item label="静态响应">
-                <br />
-                <p>
-                  当后端失败时，您仍然可以将下面提供的静态数据返回给用户。数据与任何现有的部分响应合并。如果您仍然没有后端，并且希望拥有这些数据，请添加一个无法解析的伪数据。
-                </p>
-                <el-row style="margin-top:20px"
-                  ><el-col :span="4">
-                    <el-form-item label="响应方式(Strategy)">
-                      <el-select
-                        v-model="curendpoint['extra_config']['melody_proxy']['static']['strategy']"
-                        placeholder="请选择"
-                      >
-                        <el-option
-                          v-for="item in StaticResponseS"
-                          :key="item"
-                          :label="item"
-                          :value="item"
-                        ></el-option>
-                      </el-select>
-                    </el-form-item> </el-col
-                ></el-row>
-                <el-row :gutter="20" style="margin-top:20px">
-                  <el-col :span="12">
-                    <el-form-item label="响应内容(data)">
-                      <el-input
-                        type="textarea"
-                        :rows="2"
-                        placeholder="请输入内容"
-                        v-model="curendpoint['extra_config']['melody_proxy']['static']['data']"
-                      >
-                      </el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-              </el-form-item>
-            </el-col>
-          </el-row> -->
-        </melody-card-item>
       </melody-card>
       <!-- endponit end -->
       <el-button type="primary" icon="el-icon-plus" @click="addBackendHandle"
@@ -776,11 +734,13 @@
                       <el-form-item label="响应内容(data)">
                         <el-input
                           type="textarea"
+                          :autosize="{ minRows: 5, maxRows: 10 }"
                           :rows="2"
                           placeholder="请输入内容"
                           v-model="resdata"
                         >
                         </el-input>
+                        <div id="resStaticTip" class="fs12"></div>
                       </el-form-item>
                     </el-col>
                   </el-row>
@@ -1599,12 +1559,14 @@ export default {
     resdata: {
       handler: function() {
         if (this.isJSON(this.resdata)) {
-          console.log('yes')
+          let tip = document.getElementById('resStaticTip')
+          tip.innerHTML = '<span style="color:green">格式正确</span>'
           this.curendpoint['extra_config']['melody_proxy']['static']['data'] = JSON.parse(
             this.resdata
           )
         } else {
-          console.log('no')
+          let tip = document.getElementById('resStaticTip')
+          tip.innerHTML = '<span style="color:red">格式错误</span>'
         }
       },
       deep: true,
