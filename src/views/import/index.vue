@@ -41,6 +41,8 @@
 </template>
 
 <script>
+import EndpointConfig from '@/utils/config/EndpointConfig.js'
+import Backend from '@/utils/config/Backend.js'
 export default {
   name: 'Import',
   data() {
@@ -58,11 +60,45 @@ export default {
           this.$confirm('导入会覆盖已存在的配置，是否继续？').then(() => {
             this.melodyJSON = JSON.parse(reader.result)
             this.parseHostInJSON(this.melodyJSON)
+            this.copyEndCfg(this.melodyJSON)
             this.$store.commit('updateServiceConfig', this.melodyJSON)
           })
         } else {
           this.melodyJSON = JSON.parse(reader.result)
           this.$store.commit('updateServiceConfig', this.melodyJSON)
+        }
+      }
+    },
+    copyEndCfg(melodyJSON) {
+      let endCfg = melodyJSON.endpoints
+      let endpointTemp = new EndpointConfig()
+      let backendTemp = new Backend()
+      for (let i in endCfg) {
+        let endpoint = endCfg[i]
+        this.setExtra(endpointTemp, endpoint)
+        let backCfg = endpoint.backends
+        for (let m in backCfg) {
+          let backend = backCfg[m]
+          this.setExtra(backendTemp, backend)
+        }
+      }
+    },
+    setExtra(endpointTemp, endpoint) {
+      for (let j in endpointTemp) {
+        if (j === 'extra_config') {
+          if (endpoint['extra_config'] === undefined) {
+            endpoint['extra_config'] = {}
+          }
+          for (let m in endpointTemp[j]) {
+            let extra_config = endpointTemp[j][m]
+            if (endpoint['extra_config'][m] === undefined) {
+              endpoint['extra_config'][m] = extra_config
+            }
+          }
+        } else {
+          if (endpoint[j] === undefined) {
+            endpoint[j] = endpointTemp[j]
+          }
         }
       }
     },

@@ -858,7 +858,7 @@
                   >
                     <el-select v-model="backend.encoding" placeholder="请选择">
                       <el-option
-                        v-for="item in outputs"
+                        v-for="item in encoding"
                         :key="item"
                         :label="item"
                         :value="item"
@@ -961,6 +961,20 @@
               </el-row>
               <el-row :gutter="24">
                 <el-col :span="12">
+                  <el-form-item label="错误处理(Melody_http)">
+                    <el-input
+                      placeholder="backend name"
+                      suffix-icon="el-icon-edit"
+                      v-model="backend['extra_config']['melody_http']['return_error_details']"
+                    ></el-input>
+                    <div class="fs12">
+                      如果当前接口挂掉，将返回具体错误的原因。
+                    </div>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row :gutter="24">
+                <el-col :span="12">
                   <el-form-item label="最大请求数(Max rate limit)">
                     <el-input
                       placeholder="Max rate limit"
@@ -1033,7 +1047,12 @@
                 </el-col>
                 <el-col :span="6">
                   <el-form-item label="">
-                    <el-button type="primary" @click="addMapping(backend)">添加</el-button>
+                    <el-button
+                      type="primary"
+                      @click="addMapping(backend)"
+                      @keyup.enter.native="addMapping(backend)"
+                      >添加</el-button
+                    >
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -1100,7 +1119,8 @@ export default {
       curendpoint: serviceConfig.endpoints[this.$route.params.url * 1],
       isEndpointsNone: false,
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
-      outputs: ['JSON', 'XML', 'RSS', 'String', 'No-op'],
+      outputs: ['json', 'negotiate', 'string', 'no-op'],
+      encoding: ['json', 'xml', 'rss', 'string', 'no-op'],
       StaticResponseS: ['Always', 'Success', 'Errored', 'Incomplete'],
       alg: [
         'EdDSA',

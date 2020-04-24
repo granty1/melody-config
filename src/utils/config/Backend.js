@@ -4,6 +4,7 @@ class Backend {
     this.method = 'GET'
     this.extra_config = {
       melody_ratelimit_proxy: {},
+      melody_http: {},
     }
     this.host = []
     this.encoding = 'json'
