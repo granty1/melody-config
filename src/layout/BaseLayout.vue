@@ -122,7 +122,7 @@ export default {
                   f = true
                   break
                 }
-                if (extra[j] === []) {
+                if (extra[j].length >= 1) {
                   f = true
                   break
                 }
