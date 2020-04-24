@@ -64,9 +64,81 @@ export default {
     goto(url) {
       window.location.href = url
     },
+    clrConfig(cfg) {
+      if (cfg) {
+        if (cfg.endpoints) {
+          let cfgEnds = cfg.endpoints
+          for (let i in cfgEnds) {
+            let endpoint = cfgEnds[i]
+            this.clearExtra(endpoint)
+            for (let j in endpoint) {
+              if (
+                !endpoint[j] ||
+                JSON.stringify(endpoint[j]) === '{}' ||
+                endpoint[j].length === 0
+              ) {
+                delete endpoint[j]
+              }
+            }
+            if (endpoint['backends']) {
+              let backends = endpoint['backends']
+              for (let b in backends) {
+                let backend = backends[b]
+                this.clearExtra(backend)
+                for (let c in backend) {
+                  if (
+                    !backend[c] ||
+                    JSON.stringify(backend[c]) === '{}' ||
+                    backend[c].length === 0
+                  ) {
+                    delete backend[c]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    clearExtra(cfg) {
+      if (cfg.extra_config) {
+        for (let i in cfg.extra_config) {
+          if (cfg.extra_config[i]) {
+            if (JSON.stringify(cfg.extra_config[i]) === '{}') {
+              delete cfg.extra_config[i]
+            } else {
+              let f = false
+              let extra = cfg.extra_config[i]
+              for (let j in extra) {
+                if (extra[j] !== '') {
+                  f = true
+                  break
+                }
+                if (extra[j] === true) {
+                  f = true
+                  break
+                }
+                if (typeof extra[j] == 'object' && JSON.stringify(extra[j]) !== '{}') {
+                  f = true
+                  break
+                }
+                if (extra[j] === []) {
+                  f = true
+                  break
+                }
+              }
+              if (!f) {
+                delete cfg.extra_config[i]
+              }
+            }
+          }
+        }
+      }
+    },
     exportConfig() {
       let config = this.$ls.get('config')
       if (config) {
+        this.clrConfig(config)
         let loadingInstance = Loading.service({
           fullscreen: true,
           spinner: 'el-icon-loading',
