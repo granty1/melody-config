@@ -510,7 +510,7 @@
                     v-model="curendpoint['extra_config']['melody_jose_signer']['jwk-url']"
                   ></el-input>
                   <div class="fs12">
-                    指向JWK端点的URL，其中包含一组用于验证JWT的真实性的公钥。
+                    指向JWK端点的URL，其中包含一组用于签名令牌的私钥。
                   </div>
                 </el-form-item>
               </el-col>
