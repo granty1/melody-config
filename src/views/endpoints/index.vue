@@ -719,6 +719,7 @@
                             curendpoint['extra_config']['melody_proxy']['static']['strategy']
                           "
                           placeholder="请选择"
+                          @change="changeStrategy()"
                         >
                           <el-option
                             v-for="item in StaticResponseS"
@@ -738,6 +739,7 @@
                           :rows="2"
                           placeholder="请输入内容"
                           v-model="resdata"
+                          @input="changeResdata()"
                         >
                         </el-input>
                         <div id="resStaticTip" class="fs12"></div>
@@ -1440,7 +1442,22 @@ export default {
         },
       }
       this.resdata = JSON.stringify(staticData['data'], null, 5)
-      this.curendpoint['extra_config']['melody_proxy']['static'] = staticData
+      if (this.curendpoint['extra_config']['melody_proxy'] === undefined) {
+        this.curendpoint['extra_config']['melody_proxy'] = {}
+        this.curendpoint['extra_config']['melody_proxy']['static'] = {}
+      }
+      if (this.curendpoint['extra_config']['melody_proxy']['static'] === undefined) {
+        this.curendpoint['extra_config']['melody_proxy']['static'] = {}
+      }
+      this.curendpoint['extra_config']['melody_proxy']['static']['strategy'] = 'Incomplete'
+      this.curendpoint['extra_config']['melody_proxy']['static']['data'] = {
+        new_field_a: 12,
+        new_field_b: ['arr1', 'arr2'],
+        new_field_c: {
+          obj: 'obj1',
+        },
+      }
+      this.curendpoint = JSON.parse(JSON.stringify(this.curendpoint))
       this.enableStaticRes = true
     },
     clearCacheHandle() {
@@ -1566,8 +1583,29 @@ export default {
     delStaticRes() {
       if (this.curendpoint['extra_config']['melody_proxy']['static']) {
         delete this.curendpoint['extra_config']['melody_proxy']['static']
+        this.curendpoint = JSON.parse(JSON.stringify(this.curendpoint))
         this.enableStaticRes = false
       }
+    },
+    changeResdata() {
+      if (this.isJSON(this.resdata)) {
+        let tip = document.getElementById('resStaticTip')
+        if (tip !== undefined || tip !== null) {
+          tip.innerHTML = '<span style="color:green">格式正确</span>'
+        }
+        this.curendpoint['extra_config']['melody_proxy']['static']['data'] = JSON.parse(
+          this.resdata
+        )
+        this.curendpoint = JSON.parse(JSON.stringify(this.curendpoint))
+      } else {
+        let tip = document.getElementById('resStaticTip')
+        if (tip !== undefined || tip !== null) {
+          tip.innerHTML = '<span style="color:red">格式错误</span>'
+        }
+      }
+    },
+    changeStrategy() {
+      this.curendpoint = JSON.parse(JSON.stringify(this.curendpoint))
     },
   },
   computed: {
@@ -1576,21 +1614,12 @@ export default {
     },
   },
   watch: {
-    resdata: {
-      handler: function() {
-        if (this.isJSON(this.resdata)) {
-          let tip = document.getElementById('resStaticTip')
-          tip.innerHTML = '<span style="color:green">格式正确</span>'
-          this.curendpoint['extra_config']['melody_proxy']['static']['data'] = JSON.parse(
-            this.resdata
-          )
-        } else {
-          let tip = document.getElementById('resStaticTip')
-          tip.innerHTML = '<span style="color:red">格式错误</span>'
-        }
-      },
-      deep: true,
-    },
+    // resdata: {
+    //   handler: function() {
+
+    //   },
+    //   deep: true,
+    // },
     serviceCfg: {
       handler: function(newVal) {
         if (newVal.endpoints === [] || newVal.endpoints === undefined) {
