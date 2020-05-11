@@ -116,6 +116,7 @@ export default {
                 let temp = ''
                 if (backCfg.sd === undefined || backCfg.sd === '') {
                   temp = 'static - ' + backCfg.host[hosti]
+                  backCfg['sd'] = 'static'
                 } else {
                   temp = backCfg.sd + ' - ' + backCfg.host[hosti]
                 }
