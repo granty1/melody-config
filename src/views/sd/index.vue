@@ -133,6 +133,69 @@
               </template>
             </melody-card-item>
           </melody-card>
+          <melody-card>
+            <melody-card-item title="Consul middleware">
+              <el-switch v-model="consulEnable"></el-switch>
+              <!-- Consul -->
+              <template v-if="consulEnable">
+                <!-- Consul address -->
+                <el-form-item label="Consul address">
+                  <el-input
+                    v-model="melody_consul.address"
+                    placeholder="http://example.com:8500"
+                  ></el-input>
+                  <div class="fs12">
+                    Consul服务的地址
+                  </div>
+                </el-form-item>
+                <el-form-item label="Prefix name">
+                  <el-input v-model="melody_consul.name" placeholder="Melody"></el-input>
+                  <div class="fs12">
+                    Consul服务的前缀名
+                  </div>
+                </el-form-item>
+
+                <!-- bloomfilter -->
+                <el-switch v-model="bfEnable" active-text="Bloom Filter"></el-switch>
+                <template v-if="bfEnable">
+                  <!-- Consul address -->
+                  <el-form-item label="N">
+                    <el-input v-model="melody_bloomfilter.N" placeholder="10000000"></el-input>
+                    <div class="fs12">
+                      在布隆过滤器中保存的元素个数的最大值。
+                    </div>
+                  </el-form-item>
+                  <el-form-item label="P">
+                    <el-input v-model="melody_bloomfilter.P" placeholder="0.0001"></el-input>
+                    <div class="fs12">
+                      布隆过滤器的失误率。
+                    </div>
+                  </el-form-item>
+                  <el-form-item label="HashName">
+                    <el-input
+                      v-model="melody_bloomfilter.HashName"
+                      placeholder="optimal or default"
+                    ></el-input>
+                    <div class="fs12">
+                      "default"或者"optimal".
+                    </div>
+                  </el-form-item>
+                  <el-form-item label="TTL">
+                    <el-input v-model="melody_bloomfilter.TTL" placeholder="1500"></el-input>
+                    <div class="fs12">
+                      布隆过滤器中JWT的存在时长，以秒为单位。该值必须与签名时设置的到期时间相同。
+                    </div>
+                  </el-form-item>
+                  <el-form-item label="Port">
+                    <el-input v-model="melody_bloomfilter.port" placeholder="9999"></el-input>
+                    <div class="fs12">
+                      RPC服务与布隆过滤器进行通信时的端口号.
+                    </div>
+                  </el-form-item>
+                </template>
+              </template>
+            </melody-card-item>
+          </melody-card>
         </el-col>
       </el-row>
     </el-form>
@@ -157,11 +220,30 @@ export default {
       key: '',
       cacert: '',
     }
+    let consulInit = {
+      address: 'http://127.0.0.1:8500',
+      name: 'Melody',
+    }
+    let bfInit = {
+      N: 10000000,
+      P: 0.0001,
+      HashName: 'optimal',
+      TTL: 1500,
+      port: 9999,
+    }
     return {
       melody_etcd:
         serviceConfig.extra_config.melody_etcd == undefined
           ? etcdInit
           : serviceConfig.extra_config.melody_etcd,
+      melody_consul:
+        serviceConfig.extra_config.melody_consul == undefined
+          ? consulInit
+          : serviceConfig.extra_config.melody_consul,
+      melody_bloomfilter:
+        serviceConfig.extra_config.melody_bloomfilter == undefined
+          ? bfInit
+          : serviceConfig.extra_config.melody_bloomfilter,
       etcdRules: {
         dial_timeout: [{ validator: validTimeDuration, trigger: 'blur' }],
         dial_keepalive: [{ validator: validTimeDuration, trigger: 'blur' }],
@@ -174,6 +256,8 @@ export default {
       disableSanitize: false,
 
       etcdEnable: serviceConfig.extra_config.melody_etcd !== undefined,
+      consulEnable: serviceConfig.extra_config.melody_consul !== undefined,
+      bfEnable: serviceConfig.extra_config.melody_bloomfilter !== undefined,
       curMachine: '',
     }
   },
@@ -229,6 +313,34 @@ export default {
         }
       },
     },
+    consulEnable: {
+      handler: function(n) {
+        if (n) {
+          this.$store.commit('setExtraConfig', {
+            name: 'melody_consul',
+            config: this.melody_consul,
+          })
+        } else {
+          this.$store.commit('removeExtraConfig', {
+            name: 'melody_consul',
+          })
+        }
+      },
+    },
+    bfEnable: {
+      handler: function(n) {
+        if (n) {
+          this.$store.commit('setExtraConfig', {
+            name: 'melody_bloomfilter',
+            config: this.melody_bloomfilter,
+          })
+        } else {
+          this.$store.commit('removeExtraConfig', {
+            name: 'melody_bloomfilter',
+          })
+        }
+      },
+    },
     melody_etcd: {
       handler: function() {
         if (this.etcdEnable) {
@@ -236,6 +348,28 @@ export default {
           this.$store.commit('setExtraConfig', {
             name: 'melody_etcd',
             config: this.melody_etcd,
+          })
+        }
+      },
+      deep: true,
+    },
+    melody_consul: {
+      handler: function() {
+        if (this.consulEnable) {
+          this.$store.commit('setExtraConfig', {
+            name: 'melody_consul',
+            config: this.melody_consul,
+          })
+        }
+      },
+      deep: true,
+    },
+    melody_bloomfilter: {
+      handler: function() {
+        if (this.bfEnable) {
+          this.$store.commit('setExtraConfig', {
+            name: 'melody_bloomfilter',
+            config: this.melody_bloomfilter,
           })
         }
       },
