@@ -8,6 +8,7 @@ class EndpointConfig {
       melody_proxy: {},
       melody_jose_validator: {},
       melody_jose_signer: {},
+      melody_alert: {},
     }
     this.backends = []
   }

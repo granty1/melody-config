@@ -172,6 +172,35 @@
             </el-col>
           </el-row>
         </melody-card-item>
+        <!-- early warning (melody_alert)-->
+        <melody-card-item title="Early Warning">
+          <div class="fs12">
+            下面的所有设置都是在服务配置中定义的，在这里设置一个或多个值意味着仅覆盖此特定端点的设置。
+            <br />有效时间单位为: ns, us, (or µs), ms, s, m, h E.g: 1s
+          </div>
+          <el-row :gutter="24">
+            <el-col :span="12">
+              <el-form-item label="时间(time)">
+                <el-input
+                  placeholder="time"
+                  suffix-icon="el-icon-edit"
+                  v-model="curendpoint['extra_config']['melody_alert']['time']"
+                ></el-input>
+                <div class="fs12"></div>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="size(大小)">
+                <el-input
+                  placeholder="size"
+                  suffix-icon="el-icon-edit"
+                  v-model="curendpoint['extra_config']['melody_alert']['size']"
+                ></el-input>
+                <div class="fs12"></div>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </melody-card-item>
         <!-- rate limit -->
         <melody-card-item title="Rate limit">
           <el-row>
