@@ -239,6 +239,58 @@
               </template>
             </melody-card-item>
           </melody-card>
+
+          <melody-card>
+            <!-- Early Warning -->
+            <melody-card-item title="Early Warning">
+              <div class="fs12">
+                下面的所有设置都是系统层级的，在这里设置一个或多个值意味着定义系统层级中预警的设置。
+                <br />有效内存单位为: k, m E.g: 1m
+              </div>
+              <el-form-item label="NumGC" prop="NumGC">
+                <el-input v-model="melody_alert.NumGC" placeholder="10"></el-input>
+                <div class="fs12">
+                  GC的平均次数，一般超过10次则表示GC较为频繁。
+                </div>
+              </el-form-item>
+              <el-form-item label="NumGoroutine" prop="NumGoroutine">
+                <el-input v-model="melody_alert.NumGoroutine" placeholder="50"></el-input>
+                <div class="fs12">
+                  Goroutine的数量，一般超过50则表示引擎压力较大。
+                </div>
+              </el-form-item>
+              <el-form-item label="Sys" prop="Sys">
+                <el-input v-model="melody_alert.Sys" placeholder="250m"></el-input>
+                <div class="fs12">
+                  系统所占的总内存大小，一般超过250m则表示系统内存过大。
+                </div>
+              </el-form-item>
+              <el-form-item label="HeapSys" prop="HeapSys">
+                <el-input v-model="melody_alert.HeapSys" placeholder="150m"></el-input>
+                <div class="fs12">
+                  系统中的堆内存大小，一般超过150m则表示堆内存过大。
+                </div>
+              </el-form-item>
+              <el-form-item label="StackSys" prop="StackSys">
+                <el-input v-model="melody_alert.StackSys" placeholder="150m"></el-input>
+                <div class="fs12">
+                  系统中的栈内存大小，一般超过150m则表示栈内存过大。
+                </div>
+              </el-form-item>
+              <el-form-item label="MCacheSys" prop="MCacheSys">
+                <el-input v-model="melody_alert.MCacheSys" placeholder="50m"></el-input>
+                <div class="fs12">
+                  系统中的缓存内存大小，一般超过50m则表示缓存内存过大。
+                </div>
+              </el-form-item>
+              <el-form-item label="MSpanSys" prop="MSpanSys">
+                <el-input v-model="melody_alert.MSpanSys" placeholder="10m"></el-input>
+                <div class="fs12">
+                  系统中的最大对象所占的内存大小，一般超过10m则表示对象内存过大。
+                </div>
+              </el-form-item>
+            </melody-card-item>
+          </melody-card>
         </el-col>
 
         <!-- 右侧 -->
@@ -692,6 +744,18 @@ export default {
               patterns: [],
             }
           : serviceConfig.extra_config.melody_botmonitor,
+      melody_alert:
+        serviceConfig.extra_config.melody_alert == undefined
+          ? {
+              NumGC: '10',
+              NumGoroutine: '50',
+              Sys: '250m',
+              HeapSys: '150m',
+              StackSys: '150m',
+              MCacheSys: '50m',
+              MSpanSys: '20m',
+            }
+          : serviceConfig.extra_config.melody_alert,
     }
   },
   components: {
@@ -840,7 +904,7 @@ export default {
       if (valid) {
         next()
       } else {
-        this.$alert('填写正确的内容哟yoooooo', '发生错误啦', {
+        this.$alert('填写正确的内容', '发生错误', {
           confirmButtonText: '好滴',
         })
       }
@@ -875,6 +939,15 @@ export default {
         this.$store.commit('setExtraConfig', {
           name: 'melody_botmonitor',
           config: this.melody_botmonitor,
+        })
+      },
+      deep: true,
+    },
+    melody_alert: {
+      handler: function() {
+        this.$store.commit('setExtraConfig', {
+          name: 'melody_alert',
+          config: this.melody_alert,
         })
       },
       deep: true,
