@@ -328,7 +328,7 @@
                       v-model="melody_influxdb.data_server_port"
                     ></el-input>
                     <div style="font-size: 12px">
-                      <code>melody-data</code>监听的地址，默认使用<code>8080</code>
+                      <code>melody-data</code>监听的地址，默认使用<code>8001</code>
                     </div>
                   </el-form-item>
                   <el-form-item label="Mehtod Config">
@@ -449,7 +449,7 @@ export default {
               ttl: '5s',
               time_out: '5s',
               data_server_enable: false,
-              data_server_port: ':8080',
+              data_server_port: ':8001',
               data_server_query_enable: true,
             }
           : serviceConfig.extra_config.melody_influxdb,
